@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.onboarding')
 
 @section('title', 'Peralatan Berkualitas')
 
