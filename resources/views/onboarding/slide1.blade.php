@@ -17,6 +17,6 @@
     </div>
 
     <a href="{{ route('onboarding.slide2') }}" class="next-btn">›</a>
-    <a href="{{ route('home') }}" class="skip">Skip</a>
+    <a href="{{ route('register') }}" class="skip">Skip</a>
 </div>
 @endsection

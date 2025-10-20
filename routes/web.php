@@ -19,7 +19,7 @@ Route::prefix('onboarding')->group(function () {
         return view('onboarding.slide2');
     })->name('onboarding.slide2');
 
-    Route::get('3', function () {
+    Route::get('3', function ()  {
         return view('onboarding.slide3');
     })->name('onboarding.slide3');
 });
@@ -28,6 +28,6 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
-Route::get('/home', function () {
-    return "Halaman Beranda (setelah onboarding)";
-})->name('home');
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
