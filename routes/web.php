@@ -24,6 +24,10 @@ Route::prefix('onboarding')->group(function () {
     })->name('onboarding.slide3');
 });
 
+Route::get('/register', function () {
+    return view('auth.register');
+})->name('register');
+
 Route::get('/home', function () {
     return "Halaman Beranda (setelah onboarding)";
 })->name('home');
