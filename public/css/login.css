@@ -1,150 +1,125 @@
-* {
+body {
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
-    background-image: url('/images/bromo.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: white;
-    position: relative;
-}
-
-body::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: 0;
+    background-color: #f7f9fb;
 }
 
 .container {
-    position: relative;
-    z-index: 1;
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 24px;
+    padding: 15px 0;
 }
 
-.logo-section {
-    text-align: center;
-    margin-bottom: 20px;
+.logo {
+    width: 120px;
 }
 
-.logo-section img {
-    width: 400px;
-    max-width: 90%;
-    margin-bottom: 8px;
+.profile-icon i {
+    font-size: 28px;
+    color: #333;
 }
 
-h2 {
-    font-size: 1.8rem;
-    font-weight: bold;
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 30px;
+    padding: 8px 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-icon {
+    color: #555;
+    margin-left: 10px;
+}
+
+.categories {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.categories button {
+    padding: 8px 15px;
+    border: none;
+    background: #e4e4e4;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.categories .active {
+    background: #2b6cb0;
+    color: white;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
     margin-bottom: 30px;
 }
 
-/* === Form === */
-form {
+.product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: scale(1.03);
+}
+
+.product-card img {
     width: 100%;
-    max-width: 420px;
+    height: 180px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 10px 0;
+}
+
+.footer {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-top: 1px solid #ddd;
 }
 
-.input-group {
-    position: relative;
+.footer-logo {
+    width: 80px;
 }
 
-.input-group input {
-    width: 100%;
-    padding: 14px 44px;
-    background-color: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 8px;
+.order-btn {
+    background: #2b6cb0;
     color: white;
-    font-size: 1rem;
-    transition: 0.3s;
-}
-
-.input-group input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.input-group svg {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    stroke: white;
-    stroke-width: 2;
-    fill: none;
-}
-
-.toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.7);
+    padding: 10px 20px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 1.1rem;
+    transition: background 0.3s;
 }
 
-button.submit {
-    background-color: #10b981;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    padding: 14px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button.submit:hover {
-    background-color: #34d399;
-}
-
-.register-link {
-    margin-top: 20px;
-    font-size: 0.95rem;
-    opacity: 0.85;
-}
-
-.register-link a {
-    color: #10b981;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.register-link a:hover {
-    text-decoration: underline;
-}
-
-@media (min-width: 768px) {
-    .container {
-        padding: 40px;
-    }
-
-    h2 {
-        font-size: 2rem;
-    }
-
-    input {
-        font-size: 1.05rem;
-    }
+.order-btn:hover {
+    background: #224e7a;
 }

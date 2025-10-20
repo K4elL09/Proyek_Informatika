@@ -14,7 +14,7 @@
 
         <h2>Masuk</h2>
 
-        <form action="{{ route('login') }}" method="POST">
+        <form action="{{ route('login.post') }}" method="POST">
             @csrf
             <div class="input-group">
                 <svg viewBox="0 0 24 24">

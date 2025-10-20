@@ -16,11 +16,13 @@
     <div class="container">
         <div>
             <div class="header">
-                <i class="fas fa-arrow-left back-arrow"></i>
+                <a href="{{ route('login') }}">
+                    <i class="fas fa-arrow-left back-arrow"></i>
+                </a>
                 <h1>Daftar</h1>
             </div>
 
-            <form action="{{ route('register') }}" method="POST">
+            <form action="{{ route('register.post') }}" method="POST">
                 @csrf
                 <div class="input-group">
                     <i class="fas fa-user icon"></i>
@@ -34,20 +36,22 @@
 
                 <div class="input-group">
                     <i class="fas fa-envelope icon"></i>
-                    <input type="email" name="email" placeholder="Masukkan Email / Nomor Telepon Anda" required>
+                    <input type="email" name="email" placeholder="Masukkan Email Anda" required>
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-lock icon"></i>
                     <input type="password" name="password" placeholder="Masukkan Password" required>
-                    <i class="fas fa-eye eye-icon"></i>
                 </div>
                 
                 <div class="input-group">
                     <i class="fas fa-lock icon"></i>
                     <input type="password" name="password_confirmation" placeholder="Konfirmasi Password" required>
-                    <i class="fas fa-eye eye-icon"></i>
                 </div>
+
+                <button type="submit" class="submit-button">
+                    Daftar
+                </button>
             </form>
         </div>
 
@@ -56,9 +60,9 @@
                 *Password dan verifikasi harus sama untuk membuat akun baru
             </p>
 
-            <button type="submit" class="submit-button">
-                Masuk
-            </button>
+            <p class="footer-text">
+                Sudah punya akun? <a href="{{ route('login') }}">Masuk di sini</a>
+            </p>
         </div>
     </div>
 </body>
