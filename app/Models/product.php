@@ -10,21 +10,13 @@ class Product extends Model
     use HasFactory;
 
     /**
-     * Nama tabel yang terhubung dengan model ini.
-     * (Opsional jika nama tabel Anda 'products')
-     */
-    // protected $table = 'nama_tabel_produk';
-
-    /**
-     * Kolom yang boleh diisi secara massal (mass assignable).
-     * (Praktik yang baik untuk keamanan)
+     * Kolom yang boleh diisi oleh Seeder atau Form.
      */
     protected $fillable = [
         'nama_produk',
         'harga',
         'durasi_sewa',
         'gambar_produk',
-        'deskripsi',
-        // tambahkan kolom lain di sini
+        'deskripsi', // Opsional, tambahkan jika ada
     ];
 }

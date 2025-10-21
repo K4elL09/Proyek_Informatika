@@ -1,28 +1,26 @@
-@extends('layouts.main') {{-- 1. Memberi tahu Laravel untuk menggunakan layout main.blade.php --}}
+@extends('layouts.main')
 
-@section('title', 'Beranda PDMP Outdoor') {{-- 2. Mengatur judul halaman --}}
+@section('title', 'Beranda PDMP Outdoor')
 
-{{-- 3. Semua kode di bawah ini akan dimasukkan ke @yield('content') --}}
 @section('content')
 
     <form action="{{ route('home') }}" method="GET">
-        <div class="search-bar">
+        <div class="search-bar" style="position: relative; margin-bottom: 20px;">
             <input type="text" 
                    name="search" 
                    placeholder="Search" 
-                   value="{{ request('search') }}">
-            <i class="fas fa-search search-icon"></i>
-        </div>
+                   value="{{ request('search') }}"
+                   style="width: 100%; padding: 12px 20px; background-color: #3c3c3c; border: none; border-radius: 8px; color: white; font-size: 16px;"
+            >
+            </div>
     </form>
 
-    <div class="categories">
-        <button class="active">Rekomendasi</button>
-        <button>Tenda</button>
-        <button>Sleeping Bag</button>
-        <button>Carrier</button>
-        <button>Headlamp</button>
-        <button>Lainnya</button>
-    </div>
+    <div class="categories" style="margin-bottom: 30px;">
+        <button style="background-color: #00A87D; color: white; border: none; padding: 8px 16px; border-radius: 20px; margin-right: 10px; font-size: 14px; cursor: pointer;">Rekomendasi</button>
+        <button style="background-color: #3c3c3c; color: white; border: none; padding: 8px 16px; border-radius: 20px; margin-right: 10px; font-size: 14px; cursor: pointer;">Tenda</button>
+        <button style="background-color: #3c3c3c; color: white; border: none; padding: 8px 16px; border-radius: 20px; margin-right: 10px; font-size: 14px; cursor: pointer;">Sleeping Bag</button>
+        <button style="background-color: #3c3c3c; color: white; border: none; padding: 8px 16px; border-radius: 20px; margin-right: 10px; font-size: 14px; cursor: pointer;">Carrier</button>
+        </div>
 
     <div class="swiper product-slider">
         <div class="swiper-wrapper">
@@ -56,14 +54,12 @@
 @endsection
 
 
-{{-- 4. Kode JS ini akan dimasukkan ke @stack('scripts') --}}
 @push('scripts')
 <script>
-    // Inisialisasi Swiper.js
     const swiper = new Swiper('.product-slider', {
-        loop: false,
-        slidesPerView: 'auto',
-        spaceBetween: 20,
+        loop: false, // Jangan loop jika produk sedikit
+        slidesPerView: 'auto', // Tampilkan slide sebanyak mungkin
+        spaceBetween: 20, // Jarak antar produk
 
         // Tombol Navigasi Kanan/Kiri
         navigation: {
@@ -71,17 +67,17 @@
             prevEl: '.swiper-button-prev',
         },
 
-        // Mengatur tampilan di berbagai ukuran layar
+        // Mengatur tampilan di berbagai ukuran layar (Responsive)
         breakpoints: {
-            320: {
-                slidesPerView: 1.5,
+            320: { // Ukuran HP
+                slidesPerView: 1.5, // Tampilkan 1.5 produk
                 spaceBetween: 15
             },
-            640: {
+            640: { // Ukuran Tablet
                 slidesPerView: 2,
                 spaceBetween: 20
             },
-            1024: {
+            1024: { // Ukuran Desktop Kecil
                 slidesPerView: 3,
                 spaceBetween: 30
             }

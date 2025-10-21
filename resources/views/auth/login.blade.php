@@ -35,23 +35,21 @@
                 <div style="background-color: #ffcccc; border: 1px solid #ff0000; color: #ff0000; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
                     <strong>Oops! Ada yang salah:</strong>
                     <ul style="margin-top: 10px; padding-left: 20px;">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+                       @foreach ($errors->get('login_field') as $error)
+    <li>{{ $error }}</li>
+@endforeach
                     </ul>
                 </div>
             @endif
-            <div class="input-group">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00AA6C" viewBox="0 0 24 24">
-                        <path d="M22 7l-10 6L2 7v10h20V7z" opacity=".3"/>
-                        <path d="M22 6H2v12h20V6zM4 16V8l8 4 8-4v8H4z"/>
-                    </svg>
-                </div>
-                
-                <input type="email" name="email" placeholder="Masukkan E-mail Anda" required value="{{ old('email') }}">
-                
-            </div>
+           <div class="input-group">
+    <div class="icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00AA6C" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+    </div>
+    
+    <input type="text" name="login_field" placeholder="Email atau Username" required value="{{ old('login_field') }}">
+</div>
 
             <div class="input-group">
                 <div class="icon">

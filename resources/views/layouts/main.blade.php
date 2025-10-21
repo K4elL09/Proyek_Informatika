@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <style>
@@ -92,20 +93,31 @@
             max-width: 420px; /* Tombol footer tetap seukuran HP */
             cursor: pointer;
         }
-
-        /* STYLING GLOBAL */
-        .btn-main {
-            background-color: #00c67d;
-            color: white;
-            border: none;
-            padding: 12px 20px;
+        
+        /* CSS untuk product-card Anda (pastikan ada di file .css atau di sini) */
+        .product-card {
+            background-color: #3c3c3c; /* Asumsi dari gambar Anda */
             border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
+            overflow: hidden;
+            color: white;
         }
-        .btn-main:hover {
-            background-color: #00b16a;
+        .product-card img {
+            width: 100%;
+            height: 200px; /* Atur tinggi gambar */
+            object-fit: cover;
+        }
+        .product-card .product-info {
+            padding: 15px;
+        }
+        .product-card .product-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .product-card .product-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #00A87D; /* Asumsi warna hijau */
+            font-weight: bold;
         }
     </style>
 </head>
@@ -124,7 +136,8 @@
         </header>
 
         <main>
-            @yield('content') </main>
+            @yield('content')
+        </main>
 
         <footer class="site-footer">
             <div class="footer-logo">
@@ -136,5 +149,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    @stack('scripts') </body>
+
+    @stack('scripts')
+</body>
 </html>

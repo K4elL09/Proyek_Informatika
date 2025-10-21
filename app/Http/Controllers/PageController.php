@@ -3,45 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product; // <-- PASTIKAN NAMA MODEL ANDA 'Product'
+use App\Models\Product; // <-- Import Model Product
 
 class PageController extends Controller
 {
     /**
-     * Menampilkan halaman home dengan daftar produk.
-     * Akan memfilter produk jika ada parameter 'search' di URL.
+     * Menampilkan halaman beranda dengan produk
+     * dan menangani logika pencarian.
      */
     public function home(Request $request)
     {
-        // Mengambil kata kunci pencarian dari request
+        // 1. Ambil kata kunci pencarian dari URL
         $searchTerm = $request->input('search');
 
-        // Memulai kueri ke model Product
-        // Ganti 'Product' jika nama model Anda berbeda
+        // 2. Mulai kueri ke model Product
         $query = Product::query();
 
-        // Menerapkan filter pencarian HANYA JIKA $searchTerm tidak kosong
-        $query->when($searchTerm, function ($q) use ($searchTerm) {
+        // 3. JIKA ada kata kunci pencarian, filter datanya
+        $query->when($searchTerm, function ($q, $term) {
             
-            // Ganti 'nama_produk' dengan nama kolom produk di database Anda
-            return $q->where('nama_produk', 'LIKE', '%' . $searchTerm . '%');
-            
-            /* // Opsional: Jika ingin mencari di beberapa kolom sekaligus
-            return $q->where(function($subq) use ($searchTerm) {
-                $subq->where('nama_produk', 'LIKE', '%' . $searchTerm . '%')
-                     ->orWhere('deskripsi', 'LIKE', '%' . $searchTerm . '%'); // Ganti 'deskripsi'
-            });
-            */
+            // Ganti 'nama_produk' jika nama kolom Anda berbeda
+            return $q->where('nama_produk', 'LIKE', '%' . $term . '%');
         });
 
-        // Eksekusi kueri dan ambil semua hasilnya
+        // 4. Ambil semua data hasil kueri
         $products = $query->get();
 
-        // Kirim data produk yang sudah (atau tidak) difilter ke view
+        // 5. Kirim data $products ke view 'home'
         return view('home', [
             'products' => $products
         ]);
     }
-
-    // Mungkin Anda punya method lain di sini...
 }
