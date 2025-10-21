@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProfileController; // <-- TAMBAHKAN INI
 
 Route::get('/', function () {
     return redirect()->route('onboarding.slide1');
@@ -24,5 +25,13 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
 Route::get('/home', [PageController::class, 'home'])->name('home');
+
+// --- ROUTE BARU UNTUK PROFIL ---
+// Rute ini akan memanggil method 'show' di ProfileController
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+
+// Rute untuk proses logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
 Route::fallback(fn() => redirect()->route('onboarding.slide1'));
