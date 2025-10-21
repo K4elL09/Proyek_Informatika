@@ -7,11 +7,11 @@
   <link rel="stylesheet" href="{{ asset('css/onboarding.css') }}">
 </head>
 <body>
+    <div class="onboard-container" style="background-image: url('{{ asset('images/bromo.jpg') }}');">
   <div class="slide4">
     <div class="slide4-content">
       <div class="logo-section">
         <img src="{{ asset('images/pdmp.png') }}" alt="PDMP Outdoor Logo">
-        <p class="tagline">Pioneers of Discovery<br>Mountaineering<br>And Pursuit</p>
       </div>
 
       <h2>PDMP OUTDOOR</h2>
