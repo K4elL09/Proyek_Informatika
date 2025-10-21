@@ -24,19 +24,30 @@
 
             <form action="{{ route('register.post') }}" method="POST">
                 @csrf
+
+                @if ($errors->any())
+                    <div style="background-color: #ffcccc; border: 1px solid #ff0000; color: #ff0000; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                        <strong>Oops! Ada yang salah:</strong>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="input-group">
                     <i class="fas fa-user icon"></i>
-                    <input type="text" name="name" placeholder="Masukkan Nama Anda" required>
+                    <input type="text" name="name" placeholder="Masukkan Nama Anda" required value="{{ old('name') }}">
                 </div>
                 
                 <div class="input-group">
                     <i class="fas fa-id-badge icon"></i>
-                    <input type="text" name="username" placeholder="Masukkan Username Anda" required>
+                    <input type="text" name="username" placeholder="Masukkan Username Anda" required value="{{ old('username') }}">
                 </div>
 
                 <div class="input-group">
                     <i class="fas fa-envelope icon"></i>
-                    <input type="email" name="email" placeholder="Masukkan Email Anda" required>
+                    <input type="email" name="email" placeholder="Masukkan Email Anda" required value="{{ old('email') }}">
                 </div>
 
                 <div class="input-group">

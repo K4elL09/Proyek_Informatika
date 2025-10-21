@@ -4,36 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDMP Outdoor - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 <body>
+    <div class="background">
+        <div class="overlay"></div>
+    </div>
+
     <div class="container">
+        {{-- Tombol back --}}
+        <a href="{{ route('onboarding.slide3') }}" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" width="28" height="28">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+
+        {{-- Logo PDMP --}}
         <div class="logo-section">
             <img src="{{ asset('images/pdmp.png') }}" alt="Logo PDMP">
         </div>
 
-        <h2>Masuk</h2>
+        {{-- Form login --}}
+        <h2 class="title">Masuk</h2>
 
         <form action="{{ route('login.post') }}" method="POST">
             @csrf
+
+            @if ($errors->any())
+                <div style="background-color: #ffcccc; border: 1px solid #ff0000; color: #ff0000; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
+                    <strong>Oops! Ada yang salah:</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div class="input-group">
-                <svg viewBox="0 0 24 24">
-                    <path d="M22 7l-10 6L2 7"/>
-                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                </svg>
-                <input type="text" name="emailOrPhone" placeholder="E-mail / Nomor Telepon" required>
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00AA6C" viewBox="0 0 24 24">
+                        <path d="M22 7l-10 6L2 7v10h20V7z" opacity=".3"/>
+                        <path d="M22 6H2v12h20V6zM4 16V8l8 4 8-4v8H4z"/>
+                    </svg>
+                </div>
+                
+                <input type="email" name="email" placeholder="Masukkan E-mail Anda" required value="{{ old('email') }}">
+                
             </div>
 
             <div class="input-group">
-                <svg viewBox="0 0 24 24">
-                    <rect x="3" y="11" width="18" height="11" rx="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00AA6C" viewBox="0 0 24 24">
+                        <path d="M17 8V7a5 5 0 0 0-10 0v1H5v13h14V8h-2zm-8 0V7a3 3 0 0 1 6 0v1H9zm8 11H7V10h10v9z"/>
+                    </svg>
+                </div>
                 <input type="password" id="password" name="password" placeholder="Password" required>
                 <button type="button" class="toggle-password" onclick="togglePassword()">👁</button>
             </div>
 
-            <button type="submit" class="submit">Login</button>
+            <button type="submit" class="btn-green">Masuk</button>
         </form>
 
         <p class="register-link">

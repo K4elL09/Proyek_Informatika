@@ -4,17 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'PDMP Outdoor')</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+    
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <style>
         * {
             box-sizing: border-box;
         }
-
         body {
             margin: 0;
             padding: 0;
-            background-color: #121212;
+            background-color: #211F20; 
             color: white;
             font-family: "Poppins", sans-serif;
             min-height: 100vh;
@@ -22,39 +27,82 @@
             flex-direction: column;
         }
 
-        header {
+        /* * .page-wrapper tidak lagi membatasi lebar,
+         * tapi hanya berfungsi sebagai pembungkus flexbox
+         */
+        .page-wrapper {
             width: 100%;
-            padding: 15px 30px;
+            min-height: 100vh;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            background: #211F20;
+        }
+
+        /* HEADER */
+        header.site-header {
+            display: flex;
             justify-content: space-between;
-            background-color: #1e1e1e;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px; /* Batas lebar di desktop */
+            margin: 0 auto; /* Menengahkan di desktop */
+            padding: 15px 20px;
+        }
+        
+        /* LOGO DIPERBESAR */
+        header.site-header .logo img {
+            height: 45px; /* Ukuran diperbesar */
+            width: auto;
         }
 
-        header img.logo {
-            height: 50px;
+        /* PROFIL DIPERBESAR */
+        header.site-header .profile-icon img {
+            height: 38px; /* Ukuran diperbesar */
+            width: 38px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
-        header .profile {
-            font-size: 26px;
-            cursor: pointer;
-        }
-
+        /* MAIN */
         main {
             flex: 1;
             width: 100%;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
+            max-width: 1200px; /* Batas lebar di desktop */
+            margin: 20px auto 0 auto; /* Menengahkan & beri jarak atas */
+            padding: 0 15px;
         }
 
-        footer {
+        /* FOOTER */
+        footer.site-footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
-            background-color: #1e1e1e;
-            text-align: center;
-            padding: 20px 0;
+            padding: 20px 15px;
+            border-top: 1px solid #3a3839;
+        }
+        footer.site-footer .footer-logo img {
+            height: 60px;
+            width: auto;
+            margin: 10px 0;
+        }
+        footer.site-footer .order-btn {
+            background: #00AA6C;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 14px 0;
+            width: 100%;
+            max-width: 420px; /* Tombol footer tetap seukuran HP */
+            cursor: pointer;
         }
 
+        /* * STYLING GLOBAL (yang ada di home.blade.php)
+         * Memindahkan style dari inline ke sini
+         */
         .btn-main {
             background-color: #00c67d;
             color: white;
@@ -65,31 +113,38 @@
             font-weight: bold;
             transition: 0.2s;
         }
-
         .btn-main:hover {
             background-color: #00b16a;
         }
     </style>
-
-    @stack('styles')
 </head>
 <body>
-    <header>
-        <!-- ✅ Logo PDMP -->
-        <img src="{{ asset('images/pdmp2.png') }}" alt="Logo PDMP" class="logo">
-        <div class="profile"><i class="fas fa-user-circle"></i></div>
-    </header>
+    
+    <div class="page-wrapper">
+        
+        <header class="site-header">
+            <a href="{{ route('home') }}" class="logo">
+                <img src="{{ asset('images/pdmp2.png') }}" alt="Logo PDMP">
+            </a>
+            
+            <a href="{{ route('profile') }}" class="profile-icon">
+                <img src="{{ asset('images/profile.png') }}" alt="Profile">
+            </a>
+        </header>
 
-    <main>
-        @yield('content')
-    </main>
+        <main>
+            @yield('content')
+        </main>
 
-    <footer>
-        <button class="btn-main" style="width:250px;">Cek Pesanan Saya</button>
-        <p style="margin-top:10px; font-size:13px;">© 2025 PDMP Outdoor</p>
-    </footer>
+        <footer class="site-footer">
+            <div class="footer-logo">
+                <img src="{{ asset('images/pdmp2.png') }}" alt="Footer Logo">
+            </div>
+            <button class="order-btn">Cek Pesanan Saya</button>
+        </footer>
+    
+    </div>
 
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     @stack('scripts')
 </body>
 </html>
