@@ -26,3 +26,6 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::get('/home', [PageController::class, 'home'])->name('home');
 
 Route::fallback(fn() => redirect()->route('onboarding.slide1'));
+
+Route::view('/onboarding/slide4', 'onboarding.slide4')->name('onboarding.slide4');
+
