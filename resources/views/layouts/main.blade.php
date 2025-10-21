@@ -139,16 +139,18 @@
             @yield('content')
         </main>
 
-        <footer class="site-footer">
-            <div class="footer-logo">
-                <img src="{{ asset('images/pdmp2.png') }}" alt="Footer Logo">
-            </div>
-            <button class="order-btn">Cek Pesanan Saya</button>
-        </footer>
-    
+       <footer class="site-footer">
+    <div class="footer-logo">
+        <img src="{{ asset('images/pdmp2.png') }}" alt="Footer Logo">
     </div>
 
+    @if (!Request::is('profile'))
+        <button class="order-btn">Cek Pesanan Saya</button>
+    @endif
+</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 
     @stack('scripts')
 </body>

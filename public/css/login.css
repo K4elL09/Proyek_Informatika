@@ -34,6 +34,22 @@ body::after {
     min-height: 100vh;
     padding: 24px;
 }
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+
 
 /* === Bagian Logo === */
 .logo-section {
@@ -88,7 +104,7 @@ form {
 /* Ikon di dalam input */
 .input-group .icon {
     position: absolute;
-    left: 12px;
+    left: px;
     top: 50%;
     transform: translateY(-50%);
     display: flex;

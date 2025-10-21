@@ -1,0 +1,154 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #111;
+    color: #fff;
+}
+
+/* ===========================
+   🏔️ HERO BACKGROUND
+=========================== */
+.profile-hero {
+    position: relative;
+    height: 280px;
+    background: url('/images/bromo.jpg') center/cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.profile-hero .logo {
+    position: relative;
+    z-index: 2;
+    height: 100px;
+}
+
+.profile-hero .back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 3;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    padding: 8px;
+    color: #fff;
+    font-size: 20px;
+}
+
+/* ===========================
+   💳 PROFILE CARD
+=========================== */
+.profile-content {
+    background: #1c1c1c;
+    padding: 2rem 1rem 4rem;
+    margin-top: -60px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.profile-card {
+    background: #4a4a4a;
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    float: right;
+    cursor: pointer;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4df, #5f7);
+    padding: 3px;
+}
+
+.profile-info p {
+    margin: 0;
+    font-size: 13px;
+    color: #ccc;
+}
+
+.profile-info h2 {
+    margin: 0.2rem 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.profile-info h3 {
+    margin: 0;
+    font-weight: 500;
+    color: #eee;
+}
+
+/* ===========================
+   ⚙️ SETTINGS
+=========================== */
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: white;
+    background: #2b2b2b;
+    padding: 1rem;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.setting-item:hover {
+    background: #333;
+}
+
+.setting-item i {
+    font-size: 22px;
+    color: #ccc;
+}
+
+/* ===========================
+   📱 RESPONSIVE
+=========================== */
+@media (min-width: 768px) {
+    .profile-hero {
+        height: 360px;
+    }
+
+    .profile-content {
+        padding: 3rem 2rem;
+        max-width: 700px;
+        margin: -80px auto 0;
+    }
+}

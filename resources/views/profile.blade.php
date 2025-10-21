@@ -4,69 +4,67 @@
 
 @section('content')
 <div class="profile-page">
-
-    <!-- Header dengan Tombol Kembali -->
-    <header class="profile-header">
-        <a href="{{ route('home') }}" class="back-button">
+    <!-- 🔹 Hero section dengan background gunung -->
+    <section class="profile-hero">
+        <a href="{{ route('home') }}" class="back-btn">
             <i class="fas fa-arrow-left"></i>
         </a>
-    </header>
+        <img src="{{ asset('images/pdmp.png') }}" alt="PDMP Outdoor" class="logo">
+    </section>
 
-    <!-- Konten Utama Profil -->
-    <main class="profile-content">
-        <!-- Kartu Informasi Pengguna -->
-        <div class="profile-card" style="text-align: center;">
-            <div class="profile-picture" style="margin-bottom: 15px;">
-                {{-- Ganti 'profil.png' dengan gambar profil user jika ada --}}
-                <img src="{{ asset('images/profil.png') }}" 
-                     alt="Foto Profil" 
-                     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;">
-            </div>
-            
-            <form action="{{ route('logout') }}" method="POST" class="logout-form">
-                @csrf
-                <button type="submit" class="logout-button-header">LOGOUT</button>
-            </form>
-
-            <div class="user-info">
-                <h3>Username</h3>
-                <p>{{ $user->name ?? 'Nama Pengguna' }}</p>
-                <h3>No. Akun</h3>
-                <p>{{ $user->phone_number ?? '(+62) 8123456789' }}</p>
+    <!-- 🔹 Konten profil -->
+    <section class="profile-content">
+  <div class="profile-card">
+    <form action="{{ route('logout') }}" method="POST" class="logout-form">
+        @csrf
+        <button type="submit" class="logout-btn">LOGOUT</button>
+    </form>
+            <div class="profile-header">
+                <img src="{{ asset('images/profil.png') }}" alt="Foto Profil" class="profile-avatar">
+                <div class="profile-info">
+                    <p>Username</p>
+                    <h2>Louis Efraendly</h2>
+                    <p>No. Akun</p>
+                    <h3>(+62)69696969</h3>
+                </div>
             </div>
         </div>
 
-        <!-- Menu Opsi Akun -->
-        <div class="profile-menu">
-            <a href="#" class="menu-item">
+        <!-- 🔹 Pengaturan Akun -->
+        <div class="settings">
+            <a href="#" class="setting-item">
                 <i class="fas fa-envelope"></i>
-                <div class="menu-text">
-                    <h4>E-Mail</h4>
-                    <p>Ganti alamat email</p>
+                <div>
+                    <strong>E-Mail</strong>
+                    <p>Ganti akun email FORGER</p>
                 </div>
             </a>
-            <a href="#" class="menu-item">
-                <i class="fas fa-thumbtack"></i>
-                <div class="menu-text">
-                    <h4>PIN</h4>
-                    <p>Ganti PIN transaksi</p>
+            <a href="#" class="setting-item">
+                <i class="fas fa-key"></i>
+                <div>
+                    <strong>PIN</strong>
+                    <p>Ganti PIN transaksi FORGER</p>
                 </div>
             </a>
-            <a href="#" class="menu-item">
+            <a href="#" class="setting-item">
                 <i class="fas fa-lock"></i>
-                <div class="menu-text">
-                    <h4>Password</h4>
-                    <p>Ganti password akun</p>
+                <div>
+                    <strong>Password</strong>
+                    <p>Ganti Password akun FORGER</p>
                 </div>
             </a>
-            <a href="#" class="menu-item">
+            <a href="#" class="setting-item">
                 <i class="fas fa-phone"></i>
-                <div class="menu-text">
-                    <h4>Nomor Telepon</h4>
+                <div>
+                    <strong>Nomor Telepon</strong>
                     <p>Ganti nomor telepon</p>
                 </div>
             </a>
         </div>
-    </main>
+    </section>
 </div>
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+@endpush
