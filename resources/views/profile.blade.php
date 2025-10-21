@@ -23,7 +23,7 @@
         <div class="profile-card">
             <div class="profile-picture">
                 {{-- Ganti 'avatar.png' dengan gambar profil user jika ada --}}
-                <img src="{{ asset('images/avatar.png') }}" alt="Foto Profil">
+                <img src="{{ asset('images/profil.png') }}" alt="Foto Profil">
             </div>
             
             <form action="{{ route('logout') }}" method="POST" class="logout-form">
