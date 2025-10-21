@@ -3,11 +3,6 @@
 @section('title', 'Akun Saya')
 
 @section('content')
-{{-- 
-    PENTING: Pastikan Anda memuat Font Awesome di layouts/main.blade.php
-    dan juga file profile.css yang akan kita buat selanjutnya.
---}}
-
 <div class="profile-page">
 
     <!-- Header dengan Tombol Kembali -->
@@ -20,10 +15,12 @@
     <!-- Konten Utama Profil -->
     <main class="profile-content">
         <!-- Kartu Informasi Pengguna -->
-        <div class="profile-card">
-            <div class="profile-picture">
-                {{-- Ganti 'avatar.png' dengan gambar profil user jika ada --}}
-                <img src="{{ asset('images/profil.png') }}" alt="Foto Profil">
+        <div class="profile-card" style="text-align: center;">
+            <div class="profile-picture" style="margin-bottom: 15px;">
+                {{-- Ganti 'profil.png' dengan gambar profil user jika ada --}}
+                <img src="{{ asset('images/profil.png') }}" 
+                     alt="Foto Profil" 
+                     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;">
             </div>
             
             <form action="{{ route('logout') }}" method="POST" class="logout-form">
