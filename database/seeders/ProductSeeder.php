@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Product; // <-- 1. IMPORT MODEL ANDA
+use App\Models\Product; // Pastikan Model Product di-import
 
 class ProductSeeder extends Seeder
 {
@@ -13,17 +13,17 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        // 2. Gunakan Model Product untuk membuat data
+        // --- PRODUK TENDA (YANG SUDAH ADA) ---
         Product::create([
             'nama_produk' => 'Tenda NSM Kapasitas 6',
             'harga' => 80000,
             'durasi_sewa' => '24 Jam',
-            'gambar_produk' => 'tenda_nsm6.jpg' // Sesuaikan nama file gambar
+            'gambar_produk' => 'tenda_nsm6.jpg'
         ]);
 
         Product::create([
             'nama_produk' => 'Tenda NSM Kapasitas 4',
-            'harga' => 80000, // Anda menulis 80rb di kode lama, sesuaikan
+            'harga' => 80000,
             'durasi_sewa' => '24 Jam',
             'gambar_produk' => 'tenda_nsm4.jpg'
         ]);
@@ -35,5 +35,29 @@ class ProductSeeder extends Seeder
             'gambar_produk' => 'tenda_borneo4.jpg'
         ]);
 
+        // --- PRODUK BARU (DARI GAMBAR ANDA) ---
+        
+        Product::create([
+            'nama_produk' => 'Matras Camping', // <-- Ganti jika perlu
+            'harga' => 5000, // <-- GANTI HARGANYA ⚠️
+            'durasi_sewa' => '24 Jam',
+            'gambar_produk' => 'matras 1.jpg' // Nama file dari gambar Anda
+        ]);
+
+        Product::create([
+            'nama_produk' => 'Sleeping Bag (SB)', // <-- Ganti jika perlu
+            'harga' => 15000, // <-- GANTI HARGANYA ⚠️
+            'durasi_sewa' => '24 Jam',
+            'gambar_produk' => 'sb 1.jpg' // Nama file dari gambar Anda
+        ]);
+
+        Product::create([
+            'nama_produk' => 'Senter / Headlamp', // <-- Ganti jika perlu
+            'harga' => 10000, // <-- GANTI HARGANYA ⚠️
+            'durasi_sewa' => '24 Jam',
+            'gambar_produk' => 'senter 1.jpg' // Nama file dari gambar Anda
+        ]);
+
+        // Tambahkan produk lain di sini jika ada...
     }
 }

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
     
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
     <style>
@@ -26,10 +27,6 @@
             display: flex;
             flex-direction: column;
         }
-
-        /* * .page-wrapper tidak lagi membatasi lebar,
-         * tapi hanya berfungsi sebagai pembungkus flexbox
-         */
         .page-wrapper {
             width: 100%;
             min-height: 100vh;
@@ -48,14 +45,10 @@
             margin: 0 auto; /* Menengahkan di desktop */
             padding: 15px 20px;
         }
-        
-        /* LOGO DIPERBESAR */
         header.site-header .logo img {
             height: 45px; /* Ukuran diperbesar */
             width: auto;
         }
-
-        /* PROFIL DIPERBESAR */
         header.site-header .profile-icon img {
             height: 38px; /* Ukuran diperbesar */
             width: 38px;
@@ -100,9 +93,7 @@
             cursor: pointer;
         }
 
-        /* * STYLING GLOBAL (yang ada di home.blade.php)
-         * Memindahkan style dari inline ke sini
-         */
+        /* STYLING GLOBAL */
         .btn-main {
             background-color: #00c67d;
             color: white;
@@ -133,8 +124,7 @@
         </header>
 
         <main>
-            @yield('content')
-        </main>
+            @yield('content') </main>
 
         <footer class="site-footer">
             <div class="footer-logo">
@@ -145,6 +135,6 @@
     
     </div>
 
-    @stack('scripts')
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    @stack('scripts') </body>
 </html>
