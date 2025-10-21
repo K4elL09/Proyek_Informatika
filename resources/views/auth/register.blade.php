@@ -16,7 +16,7 @@
     <div class="container">
         <div>
             <div class="header">
-                <a href="{{ route('login') }}">
+                <a href="{{ route('onboarding.slide4') }}">
                     <i class="fas fa-arrow-left back-arrow"></i>
                 </a>
                 <h1>Daftar</h1>
