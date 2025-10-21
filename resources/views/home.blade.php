@@ -8,10 +8,18 @@
     Kita hanya perlu menampilkan konten unik halaman ini.
 --}}
 
-<div class="search-bar">
-    <input type="text" placeholder="Search">
-    <i class="fas fa-search search-icon"></i>
-</div>
+<form action="{{ route('home') }}" method="GET">
+    <div class="search-bar">
+        <input type="text" 
+               name="search" 
+               placeholder="Search" 
+               value="{{ request('search') }}">
+        
+        <i class="fas fa-search search-icon"></i>
+        
+        {{-- Tombol submit tidak terlihat, menekan Enter akan otomatis submit --}}
+    </div>
+</form>
 
 <div class="categories">
     <button class="active">Rekomendasi</button>
@@ -23,28 +31,29 @@
 </div>
 
 <div class="products">
-    <div class="product-card">
-        <img src="{{ asset('images/tenda_nsm6.jpg') }}" alt="Tenda NSM 6">
-        <div class="product-info">
-            <h3>Tenda NSM Kapasitas 6</h3>
-            <p>Rp.80.000,00/24 Jam</p>
+
+    {{-- Loop semua data dari variabel $products --}}
+    @forelse ($products as $product)
+        <div class="product-card">
+
+            {{-- Asumsi kolom gambar adalah 'gambar_produk' --}}
+            <img src="{{ asset('images/' . $product->gambar_produk) }}" alt="{{ $product->nama_produk }}">
+            
+            <div class="product-info">
+                {{-- Asumsi kolom nama adalah 'nama_produk' --}}
+                <h3>{{ $product->nama_produk }}</h3>
+
+                {{-- Asumsi kolom harga 'harga' dan durasi 'durasi_sewa' --}}
+                <p>Rp.{{ number_format($product->harga, 0, ',', '.') }}/{{ $product->durasi_sewa }}</p>
+            </div>
         </div>
-    </div>
-    
-    <div class="product-card">
-        <img src="{{ asset('images/tenda_nsm4.jpg') }}" alt="Tenda NSM 4">
-        <div class="product-info">
-            <h3>Tenda NSM Kapasitas 4</h3>
-            <p>Rp.80.000,00/24 Jam</p>
+
+    {{-- Jika $products kosong (pencarian tidak ditemukan) --}}
+    @empty
+        <div style="text-align: center; color: white; width: 100%;">
+            <p>Produk tidak ditemukan.</p>
         </div>
-    </div>
-    
-    <div class="product-card">
-        <img src="{{ asset('images/tenda_borneo4.jpg') }}" alt="Tenda Borneo 4">
-        <div class="product-info">
-            <h3>Tenda Borneo Kapasitas 4</h3>
-            <p>Rp.50.000,00/24 Jam</p>
-        </div>
-    </div>
+    @endforelse
+
 </div>
 @endsection
