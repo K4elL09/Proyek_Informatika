@@ -47,11 +47,11 @@
             padding: 15px 20px;
         }
         header.site-header .logo img {
-            height: 45px; /* Ukuran diperbesar */
+            height: 45px; 
             width: auto;
         }
         header.site-header .profile-icon img {
-            height: 38px; /* Ukuran diperbesar */
+            height: 38px; 
             width: 38px;
             border-radius: 50%;
             object-fit: cover;
@@ -90,20 +90,19 @@
             border-radius: 10px;
             padding: 14px 0;
             width: 100%;
-            max-width: 420px; /* Tombol footer tetap seukuran HP */
+            max-width: 420px;
             cursor: pointer;
         }
         
-        /* CSS untuk product-card Anda (pastikan ada di file .css atau di sini) */
         .product-card {
-            background-color: #3c3c3c; /* Asumsi dari gambar Anda */
+            background-color: #3c3c3c; 
             border-radius: 8px;
             overflow: hidden;
             color: white;
         }
         .product-card img {
             width: 100%;
-            height: 200px; /* Atur tinggi gambar */
+            height: 200px;
             object-fit: cover;
         }
         .product-card .product-info {
@@ -116,7 +115,7 @@
         .product-card .product-info p {
             margin: 0;
             font-size: 14px;
-            color: #00A87D; /* Asumsi warna hijau */
+            color: #00A87D; 
             font-weight: bold;
         }
     </style>

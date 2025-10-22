@@ -57,8 +57,8 @@
 @push('scripts')
 <script>
     const swiper = new Swiper('.product-slider', {
-        loop: false, // Jangan loop jika produk sedikit
-        slidesPerView: 'auto', // Tampilkan slide sebanyak mungkin
+        loop: false, 
+        slidesPerView: 'auto', 
         spaceBetween: 20, // Jarak antar produk
 
         // Tombol Navigasi Kanan/Kiri
@@ -67,17 +67,16 @@
             prevEl: '.swiper-button-prev',
         },
 
-        // Mengatur tampilan di berbagai ukuran layar (Responsive)
         breakpoints: {
-            320: { // Ukuran HP
-                slidesPerView: 1.5, // Tampilkan 1.5 produk
+            320: {
+                slidesPerView: 1.5,
                 spaceBetween: 15
             },
-            640: { // Ukuran Tablet
+            640: {
                 slidesPerView: 2,
                 spaceBetween: 20
             },
-            1024: { // Ukuran Desktop Kecil
+            1024: { 
                 slidesPerView: 3,
                 spaceBetween: 30
             }

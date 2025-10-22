@@ -5,9 +5,6 @@ body {
     color: #fff;
 }
 
-/* ===========================
-   🏔️ HERO BACKGROUND
-=========================== */
 .profile-hero {
     position: relative;
     height: 280px;
@@ -42,9 +39,6 @@ body {
     font-size: 20px;
 }
 
-/* ===========================
-   💳 PROFILE CARD
-=========================== */
 .profile-content {
     background: #1c1c1c;
     padding: 2rem 1rem 4rem;
@@ -106,9 +100,6 @@ body {
     color: #eee;
 }
 
-/* ===========================
-   ⚙️ SETTINGS
-=========================== */
 .settings {
     display: flex;
     flex-direction: column;
@@ -138,9 +129,6 @@ body {
     color: #ccc;
 }
 
-/* ===========================
-   📱 RESPONSIVE
-=========================== */
 @media (min-width: 768px) {
     .profile-hero {
         height: 360px;

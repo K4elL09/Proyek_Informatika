@@ -26,15 +26,10 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 
 Route::get('/home', [PageController::class, 'home'])->name('home');
 
-// --- ROUTE BARU UNTUK PROFIL --- (Perubahan dari Anda/HEAD)
-// Rute ini akan memanggil method 'show' di ProfileController
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 
-// Rute untuk proses logout (Perubahan dari Anda/HEAD)
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Rute baru dari remote (4ecc488...)
 Route::view('/onboarding/slide4', 'onboarding.slide4')->name('onboarding.slide4');
 
-// Rute fallback (ada di kedua versi, kita letakkan di akhir)
 Route::fallback(fn() => redirect()->route('onboarding.slide1'));

@@ -17,6 +17,6 @@ class Product extends Model
         'harga',
         'durasi_sewa',
         'gambar_produk',
-        'deskripsi', // Opsional, tambahkan jika ada
+        'deskripsi',
     ];
 }

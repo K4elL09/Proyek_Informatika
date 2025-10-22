@@ -1,11 +1,9 @@
-/* === Reset Dasar === */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* === Body & Background === */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
@@ -14,7 +12,6 @@ body {
     position: relative;
 }
 
-/* Overlay gelap di atas background */
 body::after {
     content: '';
     position: absolute;
@@ -23,7 +20,6 @@ body::after {
     z-index: 0;
 }
 
-/* === Container Utama === */
 .container {
     position: relative;
     z-index: 1;
@@ -50,8 +46,6 @@ body::after {
     opacity: 0.8;
 }
 
-
-/* === Bagian Logo === */
 .logo-section {
     text-align: center;
     margin-bottom: 20px;
@@ -63,7 +57,6 @@ body::after {
     margin-bottom: 8px;
 }
 
-/* === Judul Halaman === */
 .title {
     font-size: 1.8rem;
     font-weight: bold;
@@ -72,7 +65,6 @@ body::after {
     text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
-/* === Form === */
 form {
     width: 100%;
     max-width: 420px;
@@ -81,7 +73,6 @@ form {
     gap: 20px;
 }
 
-/* === Input Group === */
 .input-group {
     position: relative;
 }
@@ -101,7 +92,6 @@ form {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Ikon di dalam input */
 .input-group .icon {
     position: absolute;
     left: px;
@@ -112,7 +102,6 @@ form {
     justify-content: center;
 }
 
-/* Tombol toggle password (mata) */
 .toggle-password {
     position: absolute;
     right: 12px;
@@ -125,7 +114,6 @@ form {
     font-size: 1.1rem;
 }
 
-/* === Tombol Masuk === */
 .btn-green {
     background-color: #10b981;
     color: white;
@@ -145,7 +133,6 @@ form {
     transform: scale(1.02);
 }
 
-/* === Teks Registrasi === */
 .register-link {
     margin-top: 20px;
     font-size: 0.95rem;
@@ -162,7 +149,6 @@ form {
     text-decoration: underline;
 }
 
-/* === Responsif untuk layar besar === */
 @media (min-width: 768px) {
     .container {
         padding: 40px;

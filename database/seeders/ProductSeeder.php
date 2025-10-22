@@ -38,24 +38,23 @@ class ProductSeeder extends Seeder
             'gambar_produk' => 'tenda_borneo4.png'
         ]);
 
-        // --- PRODUK BARU (DARI GAMBAR ANDA) ---
         Product::create([
             'nama_produk' => 'Matras Camping',
-            'harga' => 5000, // Ganti harganya jika perlu
+            'harga' => 5000,
             'durasi_sewa' => '24 Jam',
             'gambar_produk' => 'matras 1.jpg'
         ]);
 
         Product::create([
             'nama_produk' => 'Sleeping Bag (SB)',
-            'harga' => 15000, // Ganti harganya jika perlu
+            'harga' => 15000,
             'durasi_sewa' => '24 Jam',
             'gambar_produk' => 'sb 1.jpg'
         ]);
 
         Product::create([
             'nama_produk' => 'Senter / Headlamp',
-            'harga' => 10000, // Ganti harganya jika perlu
+            'harga' => 10000,
             'durasi_sewa' => '24 Jam',
             'gambar_produk' => 'senter 1.jpg'
         ]);

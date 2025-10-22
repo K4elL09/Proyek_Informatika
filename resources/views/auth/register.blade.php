@@ -6,38 +6,30 @@
     <title>PDMP Outdoor - Daftar</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Menggunakan CSS yang sama persis dengan halaman login Anda -->
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 <body>
-    <!-- Struktur background sama persis dengan login -->
     <div class="background">
         <div class="overlay"></div>
     </div>
 
-    <!-- Container utama, class sama persis dengan login -->
     <div class="container">
         
-        <!-- Tombol back mengarah ke login -->
         <a href="{{ route('login') }}" class="back-btn">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" width="28" height="28">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
         </a>
 
-        <!-- Logo, sama persis -->
         <div class="logo-section">
             <img src="{{ asset('images/pdmp.png') }}" alt="Logo PDMP">
         </div>
 
-        <!-- Judul diubah -->
         <h2 class="title">Daftar</h2>
 
-        <!-- Form mengarah ke route 'register.post' -->
         <form action="{{ route('register.post') }}" method="POST">
             @csrf
 
-            <!-- Menampilkan error validasi, sama persis -->
             @if ($errors->any())
                 <div style="background-color: #ffcccc; border: 1px solid #ff0000; color: #ff0000; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
                     <strong>Oops! Ada yang salah:</strong>
@@ -49,7 +41,6 @@
                 </div>
             @endif
 
-            <!-- FIELD BARU: Nama Lengkap -->
             <div class="input-group">
                 <div class="icon">
                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#10b981" viewBox="0 0 24 24">
@@ -59,7 +50,6 @@
                 <input type="text" name="name" placeholder="Nama Lengkap" required value="{{ old('name') }}">
             </div>
 
-            <!-- FIELD BARU: Username (Hapus jika Anda memilih Solusi B) -->
             <div class="input-group">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#10b981" viewBox="0 0 24 24">
@@ -69,7 +59,6 @@
                 <input type="text" name="username" placeholder="Username" required value="{{ old('username') }}">
             </div>
 
-            <!-- Field Email (Sama) -->
             <div class="input-group">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#10b981" viewBox="0 0 24 24">
@@ -80,7 +69,6 @@
                 <input type="email" name="email" placeholder="Masukkan E-mail Anda" required value="{{ old('email') }}">
             </div>
 
-            <!-- Field Password -->
             <div class="input-group">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#10b981" viewBox="0 0 24 24">
@@ -91,7 +79,6 @@
                 <button type="button" class="toggle-password" onclick="togglePassword('password')">👁</button>
             </div>
 
-            <!-- FIELD BARU: Konfirmasi Password -->
             <div class="input-group">
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#10b981" viewBox="0 0 24 24">
@@ -102,17 +89,14 @@
                 <button type="button" class="toggle-password" onclick="togglePassword('password_confirmation')">👁</button>
             </div>
 
-            <!-- Tombol Submit -->
             <button type="submit" class="btn-green">Daftar</button>
         </form>
 
-        <!-- Link ke Login -->
         <p class="register-link">
             Sudah punya akun? <a href="{{ route('login') }}">Masuk di sini</a>
         </p>
     </div>
 
-    <!-- Script di-update untuk bisa handle 2 field password -->
     <script>
         function togglePassword(fieldId) {
             const input = document.getElementById(fieldId);

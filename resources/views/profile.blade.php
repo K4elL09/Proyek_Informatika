@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="profile-page">
-    <!-- 🔹 Hero section dengan background gunung -->
     <section class="profile-hero">
         <a href="{{ route('home') }}" class="back-btn">
             <i class="fas fa-arrow-left"></i>
@@ -12,7 +11,6 @@
         <img src="{{ asset('images/pdmp.png') }}" alt="PDMP Outdoor" class="logo">
     </section>
 
-    <!-- 🔹 Konten profil -->
     <section class="profile-content">
   <div class="profile-card">
     <form action="{{ route('logout') }}" method="POST" class="logout-form">
@@ -30,7 +28,6 @@
             </div>
         </div>
 
-        <!-- 🔹 Pengaturan Akun -->
         <div class="settings">
             <a href="#" class="setting-item">
                 <i class="fas fa-envelope"></i>
