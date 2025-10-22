@@ -23,7 +23,7 @@
                     <p>Username</p>
                     <h2>Louis Efraendly</h2>
                     <p>No. Akun</p>
-                    <h3>(+62)69696969</h3>
+                    <h3>(+62) 8123456789</h3>
                 </div>
             </div>
         </div>
