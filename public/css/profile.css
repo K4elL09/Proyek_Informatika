@@ -5,6 +5,7 @@ body {
     color: #fff;
 }
 
+
 .profile-hero {
     position: relative;
     height: 280px;
@@ -38,6 +39,7 @@ body {
     color: #fff;
     font-size: 20px;
 }
+
 
 .profile-content {
     background: #1c1c1c;
@@ -100,6 +102,9 @@ body {
     color: #eee;
 }
 
+/* ===========================
+   ⚙️ SETTINGS
+=========================== */
 .settings {
     display: flex;
     flex-direction: column;
@@ -128,6 +133,7 @@ body {
     font-size: 22px;
     color: #ccc;
 }
+
 
 @media (min-width: 768px) {
     .profile-hero {
