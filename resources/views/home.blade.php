@@ -58,25 +58,28 @@
 
             @forelse ($products as $product)
                 <div class="swiper-slide">
-                    <div class="product-card">
-                        {{-- Gambar produk --}}
-                        <img src="{{ asset('images/' . $product->gambar_produk) }}" alt="{{ $product->nama_produk }}">
+                    {{-- 🔗 Bungkus kartu dengan link ke halaman detail --}}
+                    <a href="{{ route('produk.show', $product->id) }}" class="product-card-link">
+                        <div class="product-card">
+                            {{-- Gambar produk --}}
+                            <img src="{{ asset('images/' . $product->gambar_produk) }}" alt="{{ $product->nama_produk }}">
 
-                        {{-- Info produk --}}
-                        <div class="product-info">
-                            <h3 style="margin-bottom: 5px;">{{ $product->nama_produk }}</h3>
+                            {{-- Info produk --}}
+                            <div class="product-info">
+                                <h3 style="margin-bottom: 5px;">{{ $product->nama_produk }}</h3>
 
-                            {{-- Kategori --}}
-                            <p style="margin: 0; color: #ccc; font-size: 13px;">
-                                {{ $product->kategori ?? 'Tanpa kategori' }}
-                            </p>
+                                {{-- Kategori --}}
+                                <p style="margin: 0; color: #ccc; font-size: 13px;">
+                                    {{ $product->kategori ?? 'Tanpa kategori' }}
+                                </p>
 
-                            {{-- Harga & durasi --}}
-                            <p style="margin-top: 5px; color: #00A87D; font-weight: bold;">
-                                Rp.{{ number_format($product->harga, 0, ',', '.') }}/{{ $product->durasi_sewa }}
-                            </p>
+                                {{-- Harga & durasi --}}
+                                <p style="margin-top: 5px; color: #00A87D; font-weight: bold;">
+                                    Rp.{{ number_format($product->harga, 0, ',', '.') }}/{{ $product->durasi_sewa }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             @empty
                 <div class="swiper-slide" style="text-align: center; color: white; width: 100%;">
@@ -92,6 +95,18 @@
     </div>
 
 @endsection
+
+{{-- 🔧 CSS tambahan untuk efek hover --}}
+<style>
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+.product-card-link:hover .product-card {
+    transform: scale(1.02);
+    transition: 0.2s ease;
+}
+</style>
 
 @push('scripts')
 <script>

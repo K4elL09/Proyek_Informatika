@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\ProfileController; // <-- Ini sudah benar
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return redirect()->route('onboarding.slide1');
@@ -38,6 +40,10 @@ Route::get('/ulasan', function () {
     return view('ulasan');
 });
 
-Route::get('/keranjang', function () {
-    return view('keranjang');
-});
+Route::get('/produk/{id}', [ProductController::class, 'show'])->name('produk.show');
+
+Route::post('/keranjang/tambah/{id}', [CartController::class, 'tambah'])->name('keranjang.tambah');
+Route::get('/keranjang', [CartController::class, 'index'])->name('keranjang.index');
+
+Route::post('/keranjang/update/{id}', [CartController::class, 'update'])->name('keranjang.update');
+Route::post('/keranjang/hapus/{id}', [CartController::class, 'hapus'])->name('keranjang.hapus');

@@ -18,5 +18,6 @@ class Product extends Model
         'durasi_sewa',
         'gambar_produk',
         'deskripsi',
+        'kategori',
     ];
 }
