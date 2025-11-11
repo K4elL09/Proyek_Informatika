@@ -13,9 +13,41 @@
     .info { flex: 1;}
     .info h4 { font-size: 15px; margin: 0 0 8px 0;}
     .info .harga { color: #00ff77; font-size: 13px; font-weight: 600; margin-bottom: 10px;}
-    .quantity-form { display: flex; align-items: center; gap: 10px; }
-    .quantity-form button { background: #000; color: #fff; border: 1px solid #fff; width: 28px; height: 28px; border-radius: 5px; cursor: pointer; font-size: 16px; }
-    .quantity-form span { font-size: 14px; font-weight: bold; min-width: 20px; text-align: center; }
+    
+    /* ✅ Tombol quantity sejajar */
+    .quantity-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+    .quantity-wrapper form {
+      margin: 0;
+    }
+    .quantity-wrapper button {
+      background: #000;
+      color: #fff;
+      border: 1px solid #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      transition: all 0.2s;
+    }
+    .quantity-wrapper button:hover {
+      background: #00ff77;
+      color: #000;
+    }
+    .quantity-wrapper span {
+      font-size: 14px;
+      font-weight: bold;
+      min-width: 25px;
+      text-align: center;
+    }
+
     .hapus-btn { background: none; border: none; color: #ff5555; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
     .total-bar { background-color: #3C3B3B; border-radius: 8px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; margin-top: 30px; font-size: 16px; font-weight: 600;}
     .total-bar .total { color: #00FF77;}
@@ -44,22 +76,26 @@
           <h4>{{ $item['nama'] }}</h4>
           <div class="harga">Rp{{ number_format($item['harga'], 0, ',', '.') }} / {{ $item['durasi'] }}</div>
 
-          {{-- Form Update Quantity --}}
-          <form action="{{ route('keranjang.update', $id) }}" method="POST" class="quantity-form">
-            @csrf
-            <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
-            <button type="submit">-</button>
-          </form>
+          {{-- Tombol Quantity sejajar --}}
+          <div class="quantity-wrapper">
+            {{-- Tombol minus --}}
+            <form action="{{ route('keranjang.update', $id) }}" method="POST">
+              @csrf
+              <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
+              <button type="submit">-</button>
+            </form>
 
-          <span>{{ $item['quantity'] }}</span>
+            <span>{{ $item['quantity'] }}</span>
 
-          <form action="{{ route('keranjang.update', $id) }}" method="POST" class="quantity-form">
-            @csrf
-            <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">
-            <button type="submit">+</button>
-          </form>
+            {{-- Tombol plus --}}
+            <form action="{{ route('keranjang.update', $id) }}" method="POST">
+              @csrf
+              <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">
+              <button type="submit">+</button>
+            </form>
+          </div>
 
-          {{-- Hapus Item --}}
+          {{-- Tombol hapus --}}
           <form action="{{ route('keranjang.hapus', $id) }}" method="POST">
             @csrf
             <button type="submit" class="hapus-btn">Hapus</button>
