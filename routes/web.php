@@ -6,6 +6,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PesananController;
 
 Route::get('/', function () {
     return redirect()->route('onboarding.slide1');
@@ -50,4 +51,6 @@ Route::post('/keranjang/hapus/{id}', [CartController::class, 'hapus'])->name('ke
 
 
 Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
-Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('checkout.process');
+Route::post('/checkout/process', [CartController::class, 'prosesCheckout'])->name('checkout.process');
+
+Route::get('/pesanan/selesai/{id}', [PesananController::class, 'selesai'])->name('pesanan.selesai');

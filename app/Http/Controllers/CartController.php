@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Transaksi;
+use App\Models\Penyewaan;
+use Carbon\Carbon;
 
 class CartController extends Controller
 {
@@ -73,26 +76,36 @@ class CartController extends Controller
         return view('checkout', compact('cart', 'total'));
     }
 
- 
-    public function prosesCheckout(Request $request)
-    {
-        $cart = session()->get('cart', []);
+ public function prosesCheckout(Request $request)
+{
+    $cart = session()->get('cart', []);
 
-        if (empty($cart)) {
-            return redirect()->route('keranjang.index')->with('error', 'Keranjang kosong!');
-        }
-
-        // Simulasi penyimpanan (bisa disimpan ke database nantinya)
-        $order = [
-            'nama' => $request->input('nama'),
-            'alamat' => $request->input('alamat'),
-            'metode' => $request->input('metode'),
-            'total' => collect($cart)->sum(fn($i) => $i['harga'] * $i['quantity']),
-        ];
-
-        // Kosongkan keranjang setelah checkout
-        session()->forget('cart');
-
-        return redirect()->route('home')->with('success', 'Pesanan berhasil dibuat!');
+    if (empty($cart)) {
+        return redirect()->route('keranjang.index')->with('error', 'Keranjang kosong!');
     }
+
+    $transaksi = Transaksi::create([
+        'user_id' => auth()->id() ?? null,
+        'nama' => $request->input('nama', 'Penyewa Guest'),
+        'alamat' => $request->input('alamat', 'Alamat belum diisi'),
+        'metode' => $request->input('metode', 'Transfer Bank - Bank Jateng'),
+        'tanggal_sewa' => Carbon::now(),
+        'tanggal_kembali' => Carbon::now()->addDays(3),
+        'total' => collect($cart)->sum(fn($i) => $i['harga'] * $i['quantity']) + 7000,
+        'status' => 'Menunggu Konfirmasi'
+    ]);
+
+    foreach ($cart as $id => $item) {
+        Penyewaan::create([
+            'transaksi_id' => $transaksi->id,
+            'product_id' => $id,
+            'quantity' => $item['quantity'],
+            'harga' => $item['harga'],
+        ]);
+    }
+
+    session()->forget('cart');
+
+    return redirect()->route('pesanan.selesai', $transaksi->id);
+}
 }

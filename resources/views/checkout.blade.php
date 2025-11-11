@@ -159,10 +159,12 @@
       justify-content: space-between;
       align-items: center;
       font-size: 13px;
+      cursor: pointer;
     }
 
     .pengiriman div.active {
       border: 1px solid #00AA6C;
+      background-color: #1f1f1f;
     }
 
     .footer-checkout {
@@ -213,88 +215,108 @@
     {{-- Header --}}
     <div class="header">
       <span>Checkout</span>
-   <a href="{{ route('keranjang.index') }}" style="color:#00FF77; text-decoration:none;">← Kembali</a>
+      <a href="{{ route('keranjang.index') }}" style="color:#00FF77; text-decoration:none;">← Kembali</a>
     </div>
 
-    {{-- Data Alamat --}}
-    <div class="box alamat">
-      <div class="alamat-info">
-        <strong>Louis Efraendly (+62 81212345678)</strong><br>
-        Kolong Jembatan Merah, Jakarta Utara, DKI Jakarta
-      </div>
-      <div class="ubah-btn">Ubah</div>
-    </div>
+    <form action="{{ route('checkout.process') }}" method="POST">
+      @csrf
 
-    {{-- Barang Dipesan --}}
-    <div class="section-title">Barang Dipesan</div>
-    <div class="section-sub">PDMP OUTDOOR</div>
-
-    @php $total = 0; @endphp
-    @foreach($cart as $id => $item)
-      @php $total += $item['harga'] * $item['quantity']; @endphp
-      <div class="produk">
-        <img src="{{ asset('images/' . $item['gambar']) }}" alt="{{ $item['nama'] }}">
-        <div class="produk-info">
-          <h4>{{ $item['nama'] }}</h4>
-          <div class="harga">Rp{{ number_format($item['harga'],0,',','.') }}</div>
-          <div class="qty">x{{ $item['quantity'] }}</div>
+      {{-- Data Alamat --}}
+      <div class="box alamat">
+        <div class="alamat-info">
+          <strong>{{ auth()->user()->name ?? 'Penyewa Guest' }}</strong><br>
+          <textarea name="alamat" rows="2" placeholder="Masukkan alamat lengkap kamu..." required></textarea>
         </div>
       </div>
-    @endforeach
 
-    {{-- Pesan --}}
-    <div class="box">
-      <p style="font-size:13px;">Pesan:</p>
-      <textarea rows="2" placeholder="Silakan tinggalkan pesan..."></textarea>
-      <p style="margin-top:10px; font-size:13px;">Total Pesanan ({{ count($cart) }} barang): Rp{{ number_format($total, 0, ',', '.') }}</p>
-    </div>
+      {{-- Barang Dipesan --}}
+      <div class="section-title">Barang Dipesan</div>
+      <div class="section-sub">PDMP OUTDOOR</div>
 
-    {{-- Metode Pembayaran --}}
-    <div class="pembayaran">
-      <span>Metode Pembayaran:</span>
-      <span>Transfer Bank - Bank Jateng</span>
-    </div>
-
-    {{-- Metode Pengiriman --}}
-    <div class="pengiriman" style="margin-top:15px;">
-      <div class="active">
-        <span>Ambil di Tempat</span>
-        <span>✔️</span>
-      </div>
-      <div>
-        <span>Diantar ke Rumah</span>
-        <span>○</span>
-      </div>
-    </div>
-
-    {{-- Rincian Pembayaran --}}
-    <div class="box">
-      <p style="font-size:13px;">Rincian Pembayaran</p>
-      <div class="rincian">
-        <div class="rincian-row">
-          <span>Subtotal Barang</span><span>Rp{{ number_format($total, 0, ',', '.') }}</span>
+      @php $total = 0; @endphp
+      @foreach($cart as $id => $item)
+        @php $total += $item['harga'] * $item['quantity']; @endphp
+        <div class="produk">
+          <img src="{{ asset('images/' . $item['gambar']) }}" alt="{{ $item['nama'] }}">
+          <div class="produk-info">
+            <h4>{{ $item['nama'] }}</h4>
+            <div class="harga">Rp{{ number_format($item['harga'],0,',','.') }}</div>
+            <div class="qty">x{{ $item['quantity'] }}</div>
+          </div>
         </div>
-        <div class="rincian-row">
-          <span>Subtotal Pengiriman</span><span>-</span>
-        </div>
-        <div class="rincian-row">
-          <span>Biaya Layanan</span><span>Rp7.000</span>
-        </div>
-        <div class="rincian-row total">
-          <span>Total Pembayaran</span><span>Rp{{ number_format($total + 7000, 0, ',', '.') }}</span>
-        </div>
-      </div>
-    </div>
+      @endforeach
 
-    {{-- Footer --}}
-    <div class="footer-checkout">
-      <div class="total-harga">
-        <p>Total Pembayaran</p>
-        <p class="nominal">Rp{{ number_format($total + 7000, 0, ',', '.') }}</p>
+      {{-- Pesan --}}
+      <div class="box">
+        <p style="font-size:13px;">Pesan:</p>
+        <textarea name="pesan" rows="2" placeholder="Silakan tinggalkan pesan..."></textarea>
+        <p style="margin-top:10px; font-size:13px;">
+          Total Pesanan ({{ count($cart) }} barang): Rp{{ number_format($total, 0, ',', '.') }}
+        </p>
       </div>
-      <button class="buat-btn">Buat Pesanan</button>
-    </div>
+
+      {{-- Metode Pembayaran --}}
+      <div class="pembayaran">
+        <span>Metode Pembayaran:</span>
+        <span>Transfer Bank - Bank Jateng</span>
+        <input type="hidden" name="metode" value="Transfer Bank - Bank Jateng">
+      </div>
+
+      {{-- Metode Pengiriman --}}
+      <div class="pengiriman" style="margin-top:15px;">
+        <div id="pickup" class="active" onclick="selectPengiriman('Ambil di Tempat')">
+          <span>Ambil di Tempat</span>
+          <span>✔️</span>
+        </div>
+        <div id="delivery" onclick="selectPengiriman('Diantar ke Rumah')">
+          <span>Diantar ke Rumah</span>
+          <span>○</span>
+        </div>
+      </div>
+      <input type="hidden" name="pengiriman" id="pengiriman" value="Ambil di Tempat">
+
+      {{-- Rincian Pembayaran --}}
+      <div class="box">
+        <p style="font-size:13px;">Rincian Pembayaran</p>
+        <div class="rincian">
+          <div class="rincian-row">
+            <span>Subtotal Barang</span><span>Rp{{ number_format($total, 0, ',', '.') }}</span>
+          </div>
+          <div class="rincian-row">
+            <span>Subtotal Pengiriman</span><span>-</span>
+          </div>
+          <div class="rincian-row">
+            <span>Biaya Layanan</span><span>Rp7.000</span>
+          </div>
+          <div class="rincian-row total">
+            <span>Total Pembayaran</span><span>Rp{{ number_format($total + 7000, 0, ',', '.') }}</span>
+          </div>
+        </div>
+      </div>
+
+      {{-- Footer --}}
+      <div class="footer-checkout">
+        <div class="total-harga">
+          <p>Total Pembayaran</p>
+          <p class="nominal">Rp{{ number_format($total + 7000, 0, ',', '.') }}</p>
+        </div>
+        <button type="submit" class="buat-btn">Buat Pesanan</button>
+      </div>
+    </form>
   </div>
+
+  <script>
+    function selectPengiriman(method) {
+      document.getElementById('pickup').classList.remove('active');
+      document.getElementById('delivery').classList.remove('active');
+      if (method === 'Ambil di Tempat') {
+        document.getElementById('pickup').classList.add('active');
+      } else {
+        document.getElementById('delivery').classList.add('active');
+      }
+      document.getElementById('pengiriman').value = method;
+    }
+  </script>
 
 </body>
 </html>
