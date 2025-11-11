@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller; // <-- Tambahkan ini
+use Illuminate\Http\Request;          // <-- Tambahkan ini
+
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException; // <-- Pastikan ini ada
+use Illuminate\Validation\ValidationException; 
 
 class AuthController extends Controller
 {
@@ -15,15 +17,19 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    /**
+     * FUNGSI LOGIN YANG SUDAH DIMODIFIKASI
+     */
     public function login(Request $request)
     {
+        // 1. Validasi (Sudah benar)
         $request->validate([
             'login_field' => 'required|string',
             'password' => 'required',
         ]);
 
+        // 2. Logika Email/Username (Sudah benar)
         $loginInput = $request->input('login_field');
-        
         $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         $credentials = [
@@ -31,12 +37,23 @@ class AuthController extends Controller
             'password' => $request->input('password')
         ];
 
+        // 3. Coba Login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
-            return redirect()->intended('home');
+            // --- INI PERUBAHANNYA ---
+            // Cek role pengguna yang baru saja login
+            if (Auth::user()->role === 'admin') {
+                // Jika dia 'admin', arahkan ke dashboard admin
+                return redirect()->route('admin.dashboard');
+            }
+
+            // Jika bukan admin (user biasa), arahkan ke 'home'
+            return redirect()->intended(route('home'));
+            // --- BATAS PERUBAHAN ---
         }
 
+        // 4. Gagal Login (Sudah benar)
         return back()->withErrors([
             'login_field' => 'Email/Username atau password yang diberikan salah.',
         ])->onlyInput('login_field');
@@ -47,6 +64,9 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    /**
+     * Fungsi Register (Sudah benar)
+     */
     public function register(Request $request)
     {
         //Validasi input
@@ -63,6 +83,7 @@ class AuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            // 'role' akan otomatis 'user' (sesuai default di migrasi)
         ]);
 
         //Langsung login ketika pengguna yang baru mendaftar
@@ -72,6 +93,9 @@ class AuthController extends Controller
         return redirect()->route('home');
     }
 
+    /**
+     * Fungsi Logout (Sudah benar)
+     */
     public function logout(Request $request)
     {
         Auth::logout();
