@@ -47,3 +47,7 @@ Route::get('/keranjang', [CartController::class, 'index'])->name('keranjang.inde
 
 Route::post('/keranjang/update/{id}', [CartController::class, 'update'])->name('keranjang.update');
 Route::post('/keranjang/hapus/{id}', [CartController::class, 'hapus'])->name('keranjang.hapus');
+
+
+Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
+Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('checkout.process');

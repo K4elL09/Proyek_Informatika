@@ -34,7 +34,6 @@ class CartController extends Controller
         return view('keranjang', compact('cart'));
     }
 
-    //Update jumlah item
     public function update(Request $request, $id)
     {
         $cart = session()->get('cart', []);
@@ -44,7 +43,7 @@ class CartController extends Controller
             if ($newQty > 0) {
                 $cart[$id]['quantity'] = $newQty;
             } else {
-                unset($cart[$id]); // kalau qty = 0, hapus otomatis
+                unset($cart[$id]);
             }
             session()->put('cart', $cart);
         }
@@ -52,7 +51,6 @@ class CartController extends Controller
         return redirect()->route('keranjang.index');
     }
 
-    //Hapus item dari keranjang
     public function hapus($id)
     {
         $cart = session()->get('cart', []);
@@ -62,5 +60,39 @@ class CartController extends Controller
         }
 
         return redirect()->route('keranjang.index')->with('success', 'Produk dihapus dari keranjang!');
+    }
+
+    
+    public function checkout()
+    {
+        $cart = session()->get('cart', []);
+        $total = collect($cart)->sum(function ($item) {
+            return $item['harga'] * $item['quantity'];
+        });
+
+        return view('checkout', compact('cart', 'total'));
+    }
+
+ 
+    public function prosesCheckout(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        if (empty($cart)) {
+            return redirect()->route('keranjang.index')->with('error', 'Keranjang kosong!');
+        }
+
+        // Simulasi penyimpanan (bisa disimpan ke database nantinya)
+        $order = [
+            'nama' => $request->input('nama'),
+            'alamat' => $request->input('alamat'),
+            'metode' => $request->input('metode'),
+            'total' => collect($cart)->sum(fn($i) => $i['harga'] * $i['quantity']),
+        ];
+
+        // Kosongkan keranjang setelah checkout
+        session()->forget('cart');
+
+        return redirect()->route('home')->with('success', 'Pesanan berhasil dibuat!');
     }
 }

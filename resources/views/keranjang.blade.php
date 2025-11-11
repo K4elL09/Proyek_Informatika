@@ -107,9 +107,12 @@
     @endforelse
 
     <div class="total-bar">
-      <span>Total <span class="total">Rp{{ number_format($total, 0, ',', '.') }}</span></span>
-      <button class="checkout-btn">Checkout ({{ count($cart) }})</button>
-    </div>
-  </div>
+  <span>Total <span class="total">Rp{{ number_format($total, 0, ',', '.') }}</span></span>
+  <form action="{{ route('checkout') }}" method="GET">
+    <button type="submit" class="checkout-btn">
+      Checkout ({{ count($cart) }})
+    </button>
+  </form>
+</div>
 </body>
 </html>
