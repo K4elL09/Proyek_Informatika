@@ -9,23 +9,31 @@ class PageController extends Controller
 {
     /**
      * Menampilkan halaman beranda dengan produk
-     * dan menangani logika pencarian.
+     * serta mendukung pencarian dan filter kategori.
      */
     public function home(Request $request)
     {
         $searchTerm = $request->input('search');
+        $kategori = $request->input('kategori');
 
         $query = Product::query();
 
-        $query->when($searchTerm, function ($q, $term) {
-            
-            return $q->where('nama_produk', 'LIKE', '%' . $term . '%');
-        });
+        //Filter berdasarkan pencarian nama produk
+        if ($searchTerm) {
+            $query->where('nama_produk', 'LIKE', '%' . $searchTerm . '%');
+        }
 
+        //Filter berdasarkan kategori
+        if ($kategori && $kategori !== 'Semua') {
+            $query->whereRaw('LOWER(kategori) = ?', [strtolower($kategori)]);
+        }
+
+        //Ambil data produk
         $products = $query->get();
 
+        //Kirim ke view
         return view('home', [
-            'products' => $products
+            'products' => $products,
         ]);
     }
 }
