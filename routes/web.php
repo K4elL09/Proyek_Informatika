@@ -26,6 +26,9 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 
 Route::get('/home', [PageController::class, 'home'])->name('home');
 
+Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/produk/{id}', [PageController::class, 'show'])->name('produk.show');
+
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

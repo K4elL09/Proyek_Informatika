@@ -1,3 +1,4 @@
+
 @extends('layouts.main')
 
 @section('title', 'Beranda PDMP Outdoor')
@@ -60,7 +61,12 @@
                 <div class="swiper-slide">
                     <div class="product-card">
                         {{-- Gambar produk --}}
-                        <img src="{{ asset('images/' . $product->gambar_produk) }}" alt="{{ $product->nama_produk }}">
+                       <a href="{{ route('produk.show', $product->id) }}" style="text-decoration: none; color: inherit;">
+    <img src="{{ asset('images/' . $product->gambar_produk) }}" 
+         alt="{{ $product->nama_produk }}" 
+         style="cursor: pointer;">
+</a>
+
 
                         {{-- Info produk --}}
                         <div class="product-info">
