@@ -33,3 +33,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::view('/onboarding/slide4', 'onboarding.slide4')->name('onboarding.slide4');
 
 Route::fallback(fn() => redirect()->route('onboarding.slide1'));
+
+Route::get('/ulasan', function () {
+    return view('ulasan');
+});
+
+Route::get('/keranjang', function () {
+    return view('keranjang');
+});
