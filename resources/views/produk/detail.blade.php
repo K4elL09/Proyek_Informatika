@@ -38,7 +38,10 @@
             </div>
 
             <div class="action-buttons">
-                <button class="btn-outline">Sewa Langsung</button>
+    <form action="{{ route('checkout.sewaLangsung', $product->id) }}" method="POST" style="flex: 1;">
+    @csrf
+    <button type="submit" class="btn-outline">Sewa Langsung</button>
+</form>
 
                 <form action="{{ route('keranjang.tambah', $product->id) }}" method="POST" style="flex: 1;">
                     @csrf

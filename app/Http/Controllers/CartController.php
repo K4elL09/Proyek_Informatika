@@ -75,6 +75,28 @@ class CartController extends Controller
 
         return view('checkout', compact('cart', 'total'));
     }
+    public function sewaLangsung($id)
+{
+    session()->forget('cart'); // Hapus isi cart lama
+
+    $product = Product::findOrFail($id);
+
+    $cart = [
+        $id => [
+            'nama' => $product->nama_produk,
+            'harga' => $product->harga,
+            'gambar' => $product->gambar_produk,
+            'quantity' => 1,
+            'durasi' => $product->durasi_sewa,
+        ]
+    ];
+
+    $total = $product->harga;
+
+    session()->put('cart', $cart);
+
+    return view('checkout', compact('cart', 'total'));
+}
 
  public function prosesCheckout(Request $request)
 {
