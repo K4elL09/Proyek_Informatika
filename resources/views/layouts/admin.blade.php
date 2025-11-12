@@ -17,7 +17,6 @@
         <div class="sidebar-header">
             <img src="{{ asset('images/pdmp2.png') }}" alt="Logo" class="logo">
         </div>
-       {{-- ... (header file) ... --}}
 <ul class="sidebar-menu">
     <li><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-home"></i> Dashboard</a></li>
     <li><a href="{{ route('admin.stok.index') }}"><i class="fa-solid fa-boxes-stacked"></i> Stok Alat</a></li>
@@ -34,7 +33,6 @@
         </form>
     </li>
 </ul>
-{{-- ... (sisa file) ... --}}
     </aside>
 
     <main class="main-content">

@@ -2,38 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // <-- INI YANG HILANG
 use App\Models\Product;
 
 class PageController extends Controller
 {
     /**
-     * Menampilkan halaman beranda dengan produk
-     * serta mendukung pencarian dan filter kategori.
+     * Tampilkan halaman home dengan fitur search & filter
      */
-    public function home(Request $request)
+    public function home(Request $request) // <-- INI YANG HILANG
     {
-        $searchTerm = $request->input('search');
-        $kategori = $request->input('kategori');
-
+        // Mulai query builder
         $query = Product::query();
 
-        //Filter berdasarkan pencarian nama produk
-        if ($searchTerm) {
-            $query->where('nama_produk', 'LIKE', '%' . $searchTerm . '%');
-        }
+        // 1. Logika untuk Search
+        $query->when($request->search, function ($q) use ($request) {
+            return $q->where('nama_produk', 'like', '%' . $request->search . '%')
+                     ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
+        });
 
-        //Filter berdasarkan kategori
-        if ($kategori && $kategori !== 'Semua') {
-            $query->whereRaw('LOWER(kategori) = ?', [strtolower($kategori)]);
-        }
+        // 2. Logika untuk Filter Kategori
+        $query->when($request->kategori, function ($q) use ($request) {
+            return $q->where('kategori', $request->kategori);
+        });
 
-        //Ambil data produk
+        // 3. Ambil hasilnya
         $products = $query->get();
-
-        //Kirim ke view
-        return view('home', [
-            'products' => $products,
-        ]);
+        
+        // 4. Kirim data products ke view
+        return view('home', compact('products'));
     }
 }
