@@ -21,8 +21,28 @@ class Transaksi extends Model
         'status'
     ];
 
+    /**
+     * Relasi untuk mengambil item (digunakan oleh AdminController)
+     */
+    public function items()
+    {
+        return $this->hasMany(Penyewaan::class, 'transaksi_id');
+    }
+
+    /**
+     * Relasi untuk mengambil item (digunakan oleh PesananController)
+     * Ini adalah alias untuk 'items'
+     */
     public function penyewaan()
     {
         return $this->hasMany(Penyewaan::class, 'transaksi_id');
+    }
+
+    /**
+     * Relasi untuk mengambil data user
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

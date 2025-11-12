@@ -42,8 +42,12 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::resource('stok', StokController::class);
 
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan.index');
+    
     Route::get('/pemesanan', [AdminController::class, 'pemesanan'])->name('pemesanan.index');
+    Route::get('/pemesanan/{id}', [AdminController::class, 'showPemesananDetail'])->name('pemesanan.show');
+
     Route::get('/pengembalian', [AdminController::class, 'pengembalian'])->name('pengembalian.index');
+    Route::post('/pengembalian/proses', [AdminController::class, 'prosesPengembalian'])->name('pengembalian.proses');
 });
 
 Route::fallback(fn() => redirect()->route('onboarding.slide1'));
@@ -53,16 +57,11 @@ Route::get('/ulasan', function () {
 });
 
 Route::get('/produk/{id}', [ProductController::class, 'show'])->name('produk.show');
-
 Route::post('/keranjang/tambah/{id}', [CartController::class, 'tambah'])->name('keranjang.tambah');
 Route::get('/keranjang', [CartController::class, 'index'])->name('keranjang.index');
-
 Route::post('/keranjang/update/{id}', [CartController::class, 'update'])->name('keranjang.update');
 Route::post('/keranjang/hapus/{id}', [CartController::class, 'hapus'])->name('keranjang.hapus');
-
 Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
 Route::post('/checkout/process', [CartController::class, 'prosesCheckout'])->name('checkout.process');
-
 Route::get('/pesanan/selesai/{id}', [PesananController::class, 'selesai'])->name('pesanan.selesai');
-
 Route::post('/checkout/sewa-langsung/{id}', [CartController::class, 'sewaLangsung'])->name('checkout.sewaLangsung');
