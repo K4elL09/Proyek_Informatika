@@ -1,0 +1,229 @@
+/* public/css/admin.css */
+
+/* === Pengaturan Dasar === */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0f0f0f;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* === Sidebar === */
+.sidebar {
+    width: 250px;
+    background: #101010;
+    border-right: 1px solid #00c896;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+}
+.sidebar-header .logo {
+    width: 100%;
+    max-width: 150px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu li a,
+.sidebar-menu .logout-button {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 25px;
+    color: #ccc;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sidebar-menu li a:hover,
+.sidebar-menu .logout-button:hover {
+    background: #1c1c1c;
+    color: #00c896;
+    border-right: 3px solid #00c896;
+}
+
+.sidebar-menu .logout-button {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+.sidebar-menu .logout-button i {
+    width: 20px; /* Samakan dengan ikon lain */
+}
+
+/* === Konten Utama === */
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #0f0f0f;
+    overflow-y: auto;
+}
+
+/* === Style untuk Kartu Dashboard === */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+}
+.menu-card {
+    background-color: #1c1c1c;
+    border-radius: 20px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: #00c896;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+}
+.menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+    background: #222;
+}
+.menu-card img {
+    height: 70px;
+    margin-bottom: 15px;
+    filter: brightness(0) saturate(100%) invert(56%) sepia(89%) saturate(600%) hue-rotate(90deg);
+}
+.menu-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+}
+
+/* === Style untuk Tabel Stok === */
+.stok-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.stok-header h1 { margin: 0; color: #00c896; }
+.btn-tambah, .btn-kembali { background-color: #00c896; color: #101010; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
+.btn-kembali { background-color: #555; color: white; }
+.btn-edit { color: #f0ad4e; font-size: 14px; text-decoration: none; margin-right: 10px; }
+.btn-hapus { color: #d9534f; font-size: 14px; text-decoration: none; }
+
+.stok-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+.stok-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    color: #fff;
+    min-width: 600px;
+}
+.stok-table th, .stok-table td {
+    border: 1px solid #333;
+    padding: 12px;
+    text-align: left;
+}
+.stok-table th { background-color: #1c1c1c; }
+.stok-table td { background-color: #101010; vertical-align: middle; }
+.stok-img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; }
+.stok-table a { color: #00c896; }
+
+/* === CSS TAMBAHAN UNTUK FORM STOK === */
+.stok-form {
+    background-color: #1c1c1c;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    width: 100%;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #00c896; /* Warna hijau dari dashboard Anda */
+    font-size: 14px;
+}
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #101010;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+}
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+.form-group input[type="file"] {
+    background-color: #333;
+    padding: 10px;
+}
+
+/* === PERBAIKAN DI SINI === */
+/* Style ini HANYA untuk tombol 'Simpan' di DALAM form */
+.stok-form .btn-tambah {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    color: #101010; /* Teks gelap agar kontras di tombol hijau */
+}
+/* ======================== */
+
+
+/* Pesan Error/Success */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.btn-hapus {
+    background: none;
+    border: none;
+    color: #d9534f;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 600;
+    text-decoration: underline;
+}
+.btn-hapus:hover {
+    color: #c9302c;
+}

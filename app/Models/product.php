@@ -10,12 +10,13 @@ class Product extends Model
     use HasFactory;
 
     /**
-     * Kolom yang boleh diisi oleh Seeder atau Form.
+     * Ganti $fillable Anda dengan ini
      */
     protected $fillable = [
         'nama_produk',
         'harga',
         'durasi_sewa',
+        'stok',
         'gambar_produk',
         'deskripsi',
         'kategori',
