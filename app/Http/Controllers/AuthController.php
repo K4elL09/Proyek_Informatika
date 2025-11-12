@@ -2,74 +2,76 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller; // <-- Tambahkan ini
-use Illuminate\Http\Request;          // <-- Tambahkan ini
+// ===== TAMBAHKAN DUA BARIS INI =====
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+// ===================================
 
 use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException; 
+
 
 class AuthController extends Controller
 {
+    /**
+     * Tampilkan halaman login
+     */
     public function showLogin()
     {
         return view('auth.login');
     }
 
     /**
-     * FUNGSI LOGIN YANG SUDAH DIMODIFIKASI
+     * Proses login untuk User dan Admin
      */
     public function login(Request $request)
     {
-        // 1. Validasi (Sudah benar)
+        // 1️⃣ Validasi input
         $request->validate([
             'login_field' => 'required|string',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
-        // 2. Logika Email/Username (Sudah benar)
         $loginInput = $request->input('login_field');
+        $password = $request->input('password');
+
+        // 2️⃣ Tentukan apakah input berupa email atau username
         $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        $credentials = [
-            $fieldType => $loginInput,
-            'password' => $request->input('password')
-        ];
-
-        // 3. Coba Login
-        if (Auth::attempt($credentials)) {
+        // 3️⃣ KUNCI: Coba login ke tabel admins (guard 'admin') TERLEBIH DAHULU
+        if (Auth::guard('admin')->attempt([$fieldType => $loginInput, 'password' => $password])) {
             $request->session()->regenerate();
-            
-            // --- INI PERUBAHANNYA ---
-            // Cek role pengguna yang baru saja login
-            if (Auth::user()->role === 'admin') {
-                // Jika dia 'admin', arahkan ke dashboard admin
-                return redirect()->route('admin.dashboard');
-            }
-
-            // Jika bukan admin (user biasa), arahkan ke 'home'
-            return redirect()->intended(route('home'));
-            // --- BATAS PERUBAHAN ---
+            return redirect()->intended(route('admin.dashboard'));
         }
 
-        // 4. Gagal Login (Sudah benar)
+        // 4️⃣ Jika bukan admin, coba login ke tabel users (guard 'web')
+        if (Auth::guard('web')->attempt([$fieldType => $loginInput, 'password' => $password])) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('home'));
+        }
+
+        // 5️⃣ Jika dua-duanya gagal
         return back()->withErrors([
-            'login_field' => 'Email/Username atau password yang diberikan salah.',
+            'login_field' => 'Email/Username atau password salah.',
         ])->onlyInput('login_field');
     }
 
+    /**
+     * Tampilkan halaman register user biasa
+     */
     public function showRegister()
     {
         return view('auth.register');
     }
 
     /**
-     * Fungsi Register (Sudah benar)
+     * Proses register user biasa (admin tidak bisa register di sini)
      */
     public function register(Request $request)
     {
-        //Validasi input
+        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
@@ -77,28 +79,33 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        //Buat pengguna baru di database
+        // Buat user baru
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            // 'role' akan otomatis 'user' (sesuai default di migrasi)
         ]);
 
-        //Langsung login ketika pengguna yang baru mendaftar
-        Auth::login($user);
+        // Login otomatis
+        Auth::guard('web')->login($user);
 
-        //Ke halaman home
         return redirect()->route('home');
     }
 
     /**
-     * Fungsi Logout (Sudah benar)
+     * Logout untuk kedua jenis pengguna
      */
     public function logout(Request $request)
     {
-        Auth::logout();
+        // Logout dari semua guard aktif
+        if (Auth::guard('admin')->check()) {
+            Auth::guard('admin')->logout();
+        }
+
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

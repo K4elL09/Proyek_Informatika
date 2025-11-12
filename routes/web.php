@@ -1,14 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StokController;
-use App\Http\Controllers\LaporanController;
-use App\Http\Controllers\PemesananController;
-use App\Http\Controllers\PengembalianController;
 
 Route::get('/', function () {
     return redirect()->route('onboarding.slide1');
@@ -29,17 +27,20 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/home', [PageController::class, 'home'])->name('home');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+Route::middleware(['auth:web'])->group(function () {
+    Route::get('/home', [PageController::class, 'home'])->name('home');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+});
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    Route::resource('stok', StokController::class);
 
-    // ROUTE UNTUK MENU DASHBOARD
-    Route::get('/admin/stok', [StokController::class, 'index'])->name('stok.index');
-    Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('/admin/pemesanan', [PemesananController::class, 'index'])->name('pemesanan.index');
-    Route::get('/admin/pengembalian', [PengembalianController::class, 'index'])->name('pengembalian.index');
+    Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan.index');
+    Route::get('/pemesanan', [AdminController::class, 'pemesanan'])->name('pemesanan.index');
+    Route::get('/pengembalian', [AdminController::class, 'pengembalian'])->name('pengembalian.index');
 });
 
 Route::fallback(fn() => redirect()->route('onboarding.slide1'));
