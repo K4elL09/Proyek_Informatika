@@ -30,4 +30,4 @@
         @endforelse
     </div>
 
-@endsection
+@endsec
