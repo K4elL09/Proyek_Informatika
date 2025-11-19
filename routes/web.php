@@ -35,6 +35,7 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 });
 
+// === GROUP ADMIN ===
 Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -43,8 +44,14 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan.index');
     
+    // Rute Pemesanan
     Route::get('/pemesanan', [AdminController::class, 'pemesanan'])->name('pemesanan.index');
     Route::get('/pemesanan/{id}', [AdminController::class, 'showPemesananDetail'])->name('pemesanan.show');
+    
+    // --- RUTE BARU: TAMBAH PESANAN MANUAL (OFFLINE) ---
+    Route::get('/pemesanan/buat/baru', [AdminController::class, 'createPemesanan'])->name('pemesanan.create');
+    Route::post('/pemesanan/store', [AdminController::class, 'storePemesanan'])->name('pemesanan.store');
+    // --------------------------------------------------
 
     Route::get('/pengembalian', [AdminController::class, 'pengembalian'])->name('pengembalian.index');
     Route::post('/pengembalian/proses', [AdminController::class, 'prosesPengembalian'])->name('pengembalian.proses');

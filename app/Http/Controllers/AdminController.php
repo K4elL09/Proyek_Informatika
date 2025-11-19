@@ -53,6 +53,84 @@ class AdminController extends Controller
         return view('admin.pemesanan.show', compact('transaksi'));
     }
 
+    // --- FUNGSI BARU: Menampilkan Form Tambah Pesanan Offline ---
+    public function createPemesanan()
+    {
+        // Ambil produk yang stoknya > 0
+        $products = Product::where('stok', '>', 0)->get();
+        return view('admin.pemesanan.create', compact('products'));
+    }
+
+    // --- FUNGSI BARU: Menyimpan Pesanan Offline & Mengurangi Stok ---
+    public function storePemesanan(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string',
+            'metode' => 'required|string',
+            'products' => 'required|array',
+            'products.*' => 'exists:products,id',
+            'quantities' => 'required|array',
+            'quantities.*' => 'integer|min:1',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $totalHargaTransaksi = 0;
+            $itemsToInsert = [];
+
+            // 1. Hitung total & Cek Stok Valid
+            foreach ($request->products as $index => $productId) {
+                $product = Product::find($productId);
+                $qty = $request->quantities[$index];
+
+                if ($product->stok < $qty) {
+                    return back()->with('error', "Stok {$product->nama_produk} tidak cukup! Sisa: {$product->stok}");
+                }
+
+                $subtotal = $product->harga * $qty;
+                $totalHargaTransaksi += $subtotal;
+
+                $itemsToInsert[] = [
+                    'product' => $product,
+                    'qty' => $qty,
+                    'subtotal' => $subtotal
+                ];
+            }
+
+            // 2. Buat Transaksi
+            $transaksi = Transaksi::create([
+                'user_id' => null, // Karena offline/manual
+                'nama' => $request->nama . ' (Offline)',
+                'alamat' => 'Toko Fisik',
+                'metode' => $request->metode,
+                'tanggal_sewa' => now(),
+                'tanggal_kembali' => now()->addDays(1),
+                'total' => $totalHargaTransaksi,
+                'status' => 'Disewa'
+            ]);
+
+            // 3. Simpan Item & Kurangi Stok
+            foreach ($itemsToInsert as $item) {
+                Penyewaan::create([
+                    'transaksi_id' => $transaksi->id,
+                    'product_id' => $item['product']->id,
+                    'quantity' => $item['qty'],
+                    'harga' => $item['subtotal'],
+                ]);
+
+                // Kurangi stok
+                $item['product']->decrement('stok', $item['qty']);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.pemesanan.index')->with('success', 'Pesanan offline berhasil ditambahkan!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
     public function pengembalian()
     {
         $transaksiDisewa = Transaksi::where('status', 'Disewa')->get();
@@ -66,7 +144,6 @@ class AdminController extends Controller
         DB::beginTransaction();
         try {
             $transaksi = Transaksi::find($request->transaksi_id);
-
             $transaksi->status = 'Selesai';
             $transaksi->save();
 

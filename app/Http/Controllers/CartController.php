@@ -7,8 +7,8 @@ use App\Models\Product;
 use App\Models\Transaksi;
 use App\Models\Penyewaan;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB; // <-- TAMBAHKAN INI
-use Illuminate\Support\Facades\Auth; // <-- TAMBAHKAN INI
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -96,9 +96,6 @@ class CartController extends Controller
         return view('checkout', compact('cart', 'total'));
     }
 
-    /**
-     * FUNGSI INI TELAH DIPERBARUI
-     */
     public function prosesCheckout(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -107,9 +104,6 @@ class CartController extends Controller
             return redirect()->route('keranjang.index')->with('error', 'Keranjang kosong!');
         }
 
-        // --- MULAI PERBAIKAN ---
-
-        // 1. Validasi stok terlebih dahulu
         foreach ($cart as $id => $item) {
             $product = Product::find($id);
             if ($product->stok < $item['quantity']) {
@@ -117,19 +111,23 @@ class CartController extends Controller
             }
         }
 
-        // 2. Mulai Database Transaction
         DB::beginTransaction();
 
         try {
+
+            // === LOGIKA NAMA PEMESAN DIPERBARUI DI SINI ===
+            $namaPemesan = Auth::check() 
+                            ? Auth::user()->name 
+                            : $request->input('nama', 'Penyewa Guest');
+
             $transaksi = Transaksi::create([
                 'user_id' => auth()->id() ?? null,
-                'nama' => $request->input('nama', 'Penyewa Guest'),
+                'nama' => $namaPemesan, // <-- Menggunakan nama yang sudah ditentukan
                 'alamat' => $request->input('alamat', 'Alamat belum diisi'),
                 'metode' => $request->input('metode', 'Transfer Bank - Bank Jateng'),
                 'tanggal_sewa' => Carbon::now(),
-                'tanggal_kembali' => Carbon::now()->addDays(3), // Asumsi 3 hari
+                'tanggal_kembali' => Carbon::now()->addDays(3), 
                 'total' => collect($cart)->sum(fn($i) => $i['harga'] * $i['quantity']) + 7000,
-                // Status 'Disewa' agar bisa dikembalikan
                 'status' => 'Disewa' 
             ]);
 
@@ -138,27 +136,22 @@ class CartController extends Controller
                     'transaksi_id' => $transaksi->id,
                     'product_id' => $id,
                     'quantity' => $item['quantity'],
-                    'harga' => $item['harga'] * $item['quantity'], // Harga total per item
+                    'harga' => $item['harga'] * $item['quantity'],
                 ]);
 
-                // 3. INI KUNCINYA: Kurangi stok dari tabel products
                 $product = Product::find($id);
                 $product->stok = $product->stok - $item['quantity'];
                 $product->save();
             }
 
-            // 4. Jika semua berhasil, commit
             DB::commit();
 
             session()->forget('cart');
             return redirect()->route('pesanan.selesai', $transaksi->id);
 
         } catch (\Exception $e) {
-            // 5. Jika ada error, batalkan semua
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        
-        // --- AKHIR PERBAIKAN ---
     }
 }
