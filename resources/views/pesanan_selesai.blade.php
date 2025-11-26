@@ -119,7 +119,7 @@
 <body>
   <div class="container">
     <div class="logo">
-      <img src="{{ asset('images/logo.png') }}" alt="PDMP Logo">
+      <img src="{{ asset('images/pdmp2.png') }}" alt="PDMP Logo">
       <div>
         <strong>PDMP OUTDOOR</strong><br>
         <span style="font-size: 12px; color: #aaa;">Rincian Pesanan</span>

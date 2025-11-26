@@ -14,7 +14,6 @@
         <img src="{{ asset('images/pdmp.png') }}" alt="PDMP Outdoor Logo">
       </div>
 
-      <h2>PDMP OUTDOOR</h2>
       <p>Silahkan melakukan pendaftaran ketika pertama kali mengakses PDMP Outdoor. 
         Masuk dengan login jika anda sudah pernah mendaftar.</p>
 
