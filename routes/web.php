@@ -48,7 +48,6 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/pemesanan', [AdminController::class, 'pemesanan'])->name('pemesanan.index');
     Route::get('/pemesanan/{id}', [AdminController::class, 'showPemesananDetail'])->name('pemesanan.show');
     
-    // --- RUTE BARU: TAMBAH PESANAN MANUAL (OFFLINE) ---
     Route::get('/pemesanan/buat/baru', [AdminController::class, 'createPemesanan'])->name('pemesanan.create');
     Route::post('/pemesanan/store', [AdminController::class, 'storePemesanan'])->name('pemesanan.store');
     // --------------------------------------------------

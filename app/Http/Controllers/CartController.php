@@ -115,14 +115,13 @@ class CartController extends Controller
 
         try {
 
-            // === LOGIKA NAMA PEMESAN DIPERBARUI DI SINI ===
             $namaPemesan = Auth::check() 
                             ? Auth::user()->name 
                             : $request->input('nama', 'Penyewa Guest');
 
             $transaksi = Transaksi::create([
                 'user_id' => auth()->id() ?? null,
-                'nama' => $namaPemesan, // <-- Menggunakan nama yang sudah ditentukan
+                'nama' => $namaPemesan,
                 'alamat' => $request->input('alamat', 'Alamat belum diisi'),
                 'metode' => $request->input('metode', 'Transfer Bank - Bank Jateng'),
                 'tanggal_sewa' => Carbon::now(),

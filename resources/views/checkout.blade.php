@@ -266,11 +266,9 @@
       <div class="pengiriman" style="margin-top:15px;">
         <div id="pickup" class="active" onclick="selectPengiriman('Ambil di Tempat')">
           <span>Ambil di Tempat</span>
-          <span>✔️</span>
         </div>
         <div id="delivery" onclick="selectPengiriman('Diantar ke Rumah')">
           <span>Diantar ke Rumah</span>
-          <span>○</span>
         </div>
       </div>
       <input type="hidden" name="pengiriman" id="pengiriman" value="Ambil di Tempat">
