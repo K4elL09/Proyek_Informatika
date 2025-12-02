@@ -126,8 +126,12 @@
                 <img src="{{ asset('images/pdmp2.png') }}" alt="Logo PDMP">
             </a>
             
+            {{-- FOTO PROFIL USER DINAMIS --}}
             <a href="{{ route('profile') }}" class="profile-icon">
-                <img src="{{ asset('images/profile.png') }}" alt="Profile">
+                <img 
+                    src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/profil.png') }}" 
+                    alt="Foto Profil"
+                >
             </a>
         </header>
 
