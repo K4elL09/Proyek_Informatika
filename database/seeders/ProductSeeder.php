@@ -58,5 +58,19 @@ class ProductSeeder extends Seeder
             'durasi_sewa' => '24 Jam',
             'gambar_produk' => 'senter 1.jpg'
         ]);
+        
+        Product::create([
+            'nama_produk' => 'Sunrei Headlamp ',
+            'harga' => 15000,
+            'durasi_sewa' => '24 Jam',
+            'gambar_produk' => 'headlamp.png'
+        ]);
+
+        Product::create([
+            'nama_produk' => 'Mountlines Headlamp',
+            'harga' => 15000,
+            'durasi_sewa' => '24 Jam',
+            'gambar_produk' => 'headlamp2.png'
+        ]);
     }
 }

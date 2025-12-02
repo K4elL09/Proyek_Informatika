@@ -42,8 +42,8 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 1200px; /* Batas lebar di desktop */
-            margin: 0 auto; /* Menengahkan di desktop */
+            max-width: 1200px; 
+            margin: 0 auto; 
             padding: 15px 20px;
         }
         header.site-header .logo img {
@@ -61,8 +61,8 @@
         main {
             flex: 1;
             width: 100%;
-            max-width: 1200px; /* Batas lebar di desktop */
-            margin: 20px auto 0 auto; /* Menengahkan & beri jarak atas */
+            max-width: 1200px; 
+            margin: 20px auto 0 auto; 
             padding: 0 15px;
         }
 
@@ -129,8 +129,12 @@
                 <img src="{{ asset('images/pdmp2.png') }}" alt="Logo PDMP">
             </a>
             
+            {{-- FOTO PROFIL USER DINAMIS --}}
             <a href="{{ route('profile') }}" class="profile-icon">
-                <img src="{{ asset('images/profile.png') }}" alt="Profile">
+                <img 
+                    src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/profil.png') }}" 
+                    alt="Foto Profil"
+                >
             </a>
         </header>
 
@@ -138,19 +142,16 @@
             @yield('content')
         </main>
 
-       <footer class="site-footer">
-    <div class="footer-logo">
-        <img src="{{ asset('images/pdmp2.png') }}" alt="Footer Logo">
+        <footer class="site-footer">
+            <div class="footer-logo">
+                <img src="{{ asset('images/pdmp2.png') }}" alt="Footer Logo">
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+        @stack('scripts')
     </div>
 
-    @if (!Request::is('profile'))
-        <button class="order-btn">Cek Pesanan Saya</button>
-    @endif
-</footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-
-    @stack('scripts')
 </body>
 </html>

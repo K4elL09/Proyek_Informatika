@@ -33,6 +33,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/home', [PageController::class, 'home'])->name('home');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::get('/profile/edit-phone', [ProfileController::class, 'editPhone'])->name('profile.edit.phone');
+    Route::post('/profile/update-phone', [ProfileController::class, 'updatePhone'])->name('profile.update.phone');
+    Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])
+    ->name('profile.edit.password');
+    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])
+    ->name('profile.update.password');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])
+    ->name('profile.update.photo');
+
+
 });
 
 // === GROUP ADMIN ===

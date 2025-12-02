@@ -80,6 +80,27 @@ body {
     border-radius: 50%;
     background: linear-gradient(135deg, #4df, #5f7);
     padding: 3px;
+    object-fit: cover;
+}
+
+.photo-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* ----- TOMBOL BULAT DIHAPUS ----- */
+.edit-photo-btn {
+    display: none !important;   /* <--- tombol bulat hilang */
+}
+/* -------------------------------- */
+
+.edit-photo-btn i {
+    color: white;
+    font-size: 16px;
+}
+
+.edit-photo-btn input {
+    display: none;
 }
 
 .profile-info p {
@@ -139,4 +160,8 @@ body {
         max-width: 700px;
         margin: -80px auto 0;
     }
+    .edit-photo-btn {
+    display: none !important;
+}
+
 }
