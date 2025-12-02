@@ -44,15 +44,15 @@
             width: 100%;
             max-width: 1200px; /* Batas lebar di desktop */
             margin: 0 auto; /* Menengahkan di desktop */
-            padding: 15px 20px;
+            padding: 1px 10px;
         }
         header.site-header .logo img {
-            height: 45px; 
+            height: 100px; 
             width: auto;
         }
         header.site-header .profile-icon img {
-            height: 38px; 
-            width: 38px;
+            height: 50px; 
+            width: 50px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -62,7 +62,7 @@
             flex: 1;
             width: 100%;
             max-width: 1200px; /* Batas lebar di desktop */
-            margin: 20px auto 0 auto; /* Menengahkan & beri jarak atas */
+            margin: 10px auto 0 auto; /* Menengahkan & beri jarak atas */
             padding: 0 15px;
         }
 
@@ -76,12 +76,9 @@
             padding: 20px 15px;
             border-top: 1px solid #3a3839;
         }
-        footer.site-footer .footer-logo img {
-            height: 60px;
-            width: auto;
-            margin: 10px 0;
-        }
+
         footer.site-footer .order-btn {
+            margin-top: 100px;
             background: #00AA6C;
             border: none;
             color: #fff;
@@ -139,10 +136,6 @@
         </main>
 
        <footer class="site-footer">
-    <div class="footer-logo">
-        <img src="{{ asset('images/pdmp2.png') }}" alt="Footer Logo">
-    </div>
-
     @if (!Request::is('profile'))
         <button class="order-btn">Cek Pesanan Saya</button>
     @endif

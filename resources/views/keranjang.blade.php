@@ -14,7 +14,6 @@
     .info h4 { font-size: 15px; margin: 0 0 8px 0;}
     .info .harga { color: #00ff77; font-size: 13px; font-weight: 600; margin-bottom: 10px;}
     
-    /* ✅ Tombol quantity sejajar */
     .quantity-wrapper {
       display: flex;
       align-items: center;
@@ -53,17 +52,44 @@
     .total-bar .total { color: #00FF77;}
     .checkout-btn { background-color: #00AA6C; border: none; color: #fff; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: 600;}
     .checkout-btn:hover { background-color: #00cc88;}
+
+    .notification-popup {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50px);
+        
+        background-color: #00AA6C;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+        opacity: 0; 
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        font-weight: 600;
+    }
+    .notification-popup.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0); 
+    }
+
   </style>
 </head>
 <body>
+    
+    <div id="notificationPopup" class="notification-popup">
+    </div>
+
   <div class="container">
     <div class="header">
       <span>Keranjangku</span>
       <a href="{{ route('home') }}" style="color:#00FF77; text-decoration:none;">← Kembali</a>
     </div>
 
+    {{-- ⚠️ INI ADALAH PERUBAHAN UTAMA: Notifikasi statis dihapus dan diganti dengan elemen tersembunyi untuk dibaca JS --}}
     @if(session('success'))
-      <p style="color:#00FF77;">{{ session('success') }}</p>
+      <p id="sessionSuccessMessage" style="display: none;">{{ session('success') }}</p>
     @endif
 
     @php $total = 0; @endphp
@@ -114,5 +140,27 @@
     </button>
   </form>
 </div>
+</div>
+
+{{-- 🔑 SCRIPT JAVASCRIPT UNTUK MENAMPILKAN POPUP --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const popup = document.getElementById('notificationPopup');
+        const successMessageElement = document.getElementById('sessionSuccessMessage');
+
+        if (successMessageElement) {
+            const message = successMessageElement.textContent.trim();
+            if (message) {
+                popup.textContent = message;
+                
+                popup.classList.add('show');
+
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 3000);
+            }
+        }
+    });
+</script>
 </body>
 </html>

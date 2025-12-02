@@ -96,7 +96,6 @@
 
 @endsection
 
-{{-- 🔧 CSS tambahan untuk efek hover --}}
 <style>
 .product-card-link {
     text-decoration: none;

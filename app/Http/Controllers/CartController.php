@@ -71,6 +71,7 @@ class CartController extends Controller
     public function checkout()
     {
         $cart = session()->get('cart', []);
+        
         $total = collect($cart)->sum(function ($item) {
             return $item['harga'] * $item['quantity'];
         });
@@ -93,11 +94,16 @@ class CartController extends Controller
         ];
         $total = $product->harga;
         session()->put('cart', $cart);
-        return view('checkout', compact('cart', 'total'));
+        return view('checkout', compact('cart', 'total')); 
     }
 
     public function prosesCheckout(Request $request)
     {
+        $request->validate([
+            'tanggal_kembali' => 'required|date|after_or_equal:tomorrow', 
+            'alamat' => 'required|string|min:5',
+        ]);
+        
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
@@ -114,10 +120,24 @@ class CartController extends Controller
         DB::beginTransaction();
 
         try {
+            $tanggalSewa = Carbon::now()->startOfDay();
+            $tanggalKembali = Carbon::parse($request->input('tanggal_kembali'))->startOfDay();
+            
+            $rentalDays = $tanggalSewa->diffInDays($tanggalKembali);
+            
+            if ($rentalDays < 1) {
+                $rentalDays = 1;
+            }
+
+            $subtotalSewa = collect($cart)->sum(function ($item) use ($rentalDays) {
+                return $item['harga'] * $item['quantity'] * $rentalDays;
+            });
+
+            $totalAkhir = $subtotalSewa + 7000;
 
             $namaPemesan = Auth::check() 
-                            ? Auth::user()->name 
-                            : $request->input('nama', 'Penyewa Guest');
+                             ? Auth::user()->name 
+                             : $request->input('nama', 'Penyewa Guest');
 
             $transaksi = Transaksi::create([
                 'user_id' => auth()->id() ?? null,
@@ -125,8 +145,8 @@ class CartController extends Controller
                 'alamat' => $request->input('alamat', 'Alamat belum diisi'),
                 'metode' => $request->input('metode', 'Transfer Bank - Bank Jateng'),
                 'tanggal_sewa' => Carbon::now(),
-                'tanggal_kembali' => Carbon::now()->addDays(3), 
-                'total' => collect($cart)->sum(fn($i) => $i['harga'] * $i['quantity']) + 7000,
+                'tanggal_kembali' => $tanggalKembali, 
+                'total' => $totalAkhir,
                 'status' => 'Disewa' 
             ]);
 
@@ -135,7 +155,7 @@ class CartController extends Controller
                     'transaksi_id' => $transaksi->id,
                     'product_id' => $id,
                     'quantity' => $item['quantity'],
-                    'harga' => $item['harga'] * $item['quantity'],
+                    'harga' => $item['harga'] * $item['quantity'] * $rentalDays, 
                 ]);
 
                 $product = Product::find($id);

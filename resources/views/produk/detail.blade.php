@@ -143,30 +143,28 @@
     border: 2px solid #00AA6C;
     color: #00AA6C;
     border-radius: 8px;
-    padding: 12px 0;
+    padding: 12px 30px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
-}
-.btn-outline:hover {
-    background: #00AA6C;
-    color: #211F20;
 }
 
 .btn-primary {
     flex: 1;
-    background: #00AA6C;
-    color: #211F20;
-    border: none;
+    background: transparent;
+    border: 2px solid #00AA6C;
+    color: #00AA6C;
     border-radius: 8px;
-    padding: 12px 0;
+    padding: 12px 30px;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
 }
+
+.btn-outline:hover, 
 .btn-primary:hover {
-    background: #00C57E;
-}
+    background: #00AA6C;
+    color: white;
 
 @media (max-width: 768px) {
     .product-detail-card {

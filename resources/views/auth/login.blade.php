@@ -58,7 +58,6 @@
                     </svg>
                 </div>
                 <input type="password" id="password" name="password" placeholder="Password" required>
-                <button type="button" class="toggle-password" onclick="togglePassword()">👁</button>
             </div>
 
             <button type="submit" class="btn-green">Masuk</button>
