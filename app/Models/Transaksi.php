@@ -18,7 +18,8 @@ class Transaksi extends Model
         'tanggal_sewa',
         'tanggal_kembali',
         'total',
-        'status'
+        'status',          // <-- JANGAN LUPA KOMA DI SINI
+        'bukti_transfer',  // <-- Kolom baru
     ];
 
     /**
