@@ -71,3 +71,5 @@ Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
 Route::post('/checkout/process', [CartController::class, 'prosesCheckout'])->name('checkout.process');
 Route::get('/pesanan/selesai/{id}', [PesananController::class, 'selesai'])->name('pesanan.selesai');
 Route::post('/checkout/sewa-langsung/{id}', [CartController::class, 'sewaLangsung'])->name('checkout.sewaLangsung');
+Route::get('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'showKonfirmasiPembayaran'])->name('pembayaran.konfirmasi.show');
+Route::post('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'konfirmasiPembayaran'])->name('pembayaran.konfirmasi');

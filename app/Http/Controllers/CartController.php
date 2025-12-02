@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+
     public function tambah(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -67,7 +68,6 @@ class CartController extends Controller
         return redirect()->route('keranjang.index')->with('success', 'Produk dihapus dari keranjang!');
     }
 
-    
     public function checkout()
     {
         $cart = session()->get('cart', []);
@@ -102,6 +102,7 @@ class CartController extends Controller
         $request->validate([
             'tanggal_kembali' => 'required|date|after_or_equal:tomorrow', 
             'alamat' => 'required|string|min:5',
+            'metode' => 'required|string|in:QRIS,Transfer Bank',
         ]);
         
         $cart = session()->get('cart', []);
@@ -124,7 +125,6 @@ class CartController extends Controller
             $tanggalKembali = Carbon::parse($request->input('tanggal_kembali'))->startOfDay();
             
             $rentalDays = $tanggalSewa->diffInDays($tanggalKembali);
-            
             if ($rentalDays < 1) {
                 $rentalDays = 1;
             }
@@ -133,7 +133,8 @@ class CartController extends Controller
                 return $item['harga'] * $item['quantity'] * $rentalDays;
             });
 
-            $totalAkhir = $subtotalSewa + 7000;
+            $biayaLayanan = 7000;
+            $totalAkhir = $subtotalSewa + $biayaLayanan;
 
             $namaPemesan = Auth::check() 
                              ? Auth::user()->name 
@@ -143,11 +144,11 @@ class CartController extends Controller
                 'user_id' => auth()->id() ?? null,
                 'nama' => $namaPemesan,
                 'alamat' => $request->input('alamat', 'Alamat belum diisi'),
-                'metode' => $request->input('metode', 'Transfer Bank - Bank Jateng'),
+                'metode' => $request->input('metode'), 
                 'tanggal_sewa' => Carbon::now(),
                 'tanggal_kembali' => $tanggalKembali, 
-                'total' => $totalAkhir,
-                'status' => 'Disewa' 
+                'total' => $totalAkhir, 
+                'status' => 'Menunggu Pembayaran' 
             ]);
 
             foreach ($cart as $id => $item) {
@@ -157,20 +158,67 @@ class CartController extends Controller
                     'quantity' => $item['quantity'],
                     'harga' => $item['harga'] * $item['quantity'] * $rentalDays, 
                 ]);
-
-                $product = Product::find($id);
-                $product->stok = $product->stok - $item['quantity'];
-                $product->save();
             }
 
             DB::commit();
 
             session()->forget('cart');
-            return redirect()->route('pesanan.selesai', $transaksi->id);
+            
+            return redirect()->route('pembayaran.konfirmasi.show', $transaksi->id); 
 
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function showKonfirmasiPembayaran($transaksiId)
+    {
+        $transaksi = Transaksi::findOrFail($transaksiId);
+
+        if (Auth::check() && Auth::id() !== $transaksi->user_id) {
+             return redirect()->route('home')->with('error', 'Akses ditolak.');
+        }
+
+        return view('payment_confirm', compact('transaksi'));
+    }
+
+    public function konfirmasiPembayaran(Request $request, $transaksiId)
+    {
+        $request->validate([
+            'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $transaksi = Transaksi::findOrFail($transaksiId);
+        
+        if ($transaksi->status !== 'Menunggu Pembayaran') {
+            return back()->with('error', 'Transaksi sudah diproses atau dibatalkan.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
+    
+            $transaksi->update([
+                'status' => 'Menunggu Verifikasi', 
+                'bukti_transfer' => $path, 
+            ]);
+            
+            foreach ($transaksi->penyewaan as $item) {
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->stok = $product->stok - $item->quantity;
+                    $product->save();
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('pesanan.selesai', $transaksi->id)->with('success', 'Bukti pembayaran berhasil dikirim. Menunggu verifikasi admin.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memproses konfirmasi: ' . $e->getMessage());
         }
     }
 }

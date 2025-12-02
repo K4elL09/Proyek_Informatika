@@ -108,13 +108,6 @@
       margin-bottom: 10px;
     }
 
-    .ubah-btn {
-      color: #00AA6C; 
-      font-size: 13px;
-      cursor: pointer;
-      display: none; 
-    }
-
     textarea, input[type="date"] {
       width: 100%;
       background-color: #1a1a1a;
@@ -132,7 +125,6 @@
         outline: none;
     }
 
-    /* Styling khusus untuk input date */
     input[type="date"] {
         -webkit-appearance: none;
         appearance: none;
@@ -166,15 +158,37 @@
       border-top: 1px dashed #555;
     }
 
-    .pembayaran {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #3C3B3B;
-      border-radius: 8px;
-      padding: 15px 25px;
-      font-size: 14px; 
-      font-weight: 600;
+    .payment-options {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+        margin-bottom: 30px;
+    }
+    .payment-option-btn {
+        flex: 1;
+        background-color: #3C3B3B;
+        color: #fff;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        padding: 15px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+    .payment-option-btn.selected {
+        border-color: #00AA6C;
+        background-color: #2a2a2a;
+        color: #00FF77;
+    }
+    .payment-option-btn:hover:not(.selected) {
+        background-color: #4a4a4a;
+    }
+    .payment-option-btn img {
+        height: 20px;
+        margin-bottom: 5px;
+        filter: brightness(0) invert(1);
     }
 
     .pengiriman {
@@ -315,11 +329,23 @@
         <input type="date" 
                name="tanggal_kembali" 
                id="tanggal_kembali" 
-               min="{{ \Carbon\Carbon::now()->addDay()->format('Y-m-d') }}"
-               value="{{ \Carbon\Carbon::now()->addDay()->format('Y-m-d') }}" 
+               onchange="updateDisplay()"
                required>
         <p style="font-size: 12px; color: #ccc; margin-top: 10px;">*Minimal pengembalian adalah besok.</p>
       </div>
+
+      {{-- 🔑 METODE PEMBAYARAN BARU --}}
+      <div class="section-title">Pilih Metode Pembayaran</div>
+      <div class="payment-options">
+          <button type="button" class="payment-option-btn selected" data-method="QRIS" onclick="selectPaymentMethod(this, 'QRIS')">
+              QRIS
+          </button>
+          <button type="button" class="payment-option-btn" data-method="Transfer Bank" onclick="selectPaymentMethod(this, 'Transfer Bank')">
+              Transfer Bank
+          </button>
+      </div>
+      <input type="hidden" name="metode" id="metodePembayaran" value="QRIS">
+      {{-- AKHIR METODE PEMBAYARAN BARU --}}
 
       {{-- Barang Dipesan --}}
       <div class="section-title">Barang Dipesan</div>
@@ -332,7 +358,7 @@
           <img src="{{ asset('images/' . $item['gambar']) }}" alt="{{ $item['nama'] }}">
           <div class="produk-info">
             <h4>{{ $item['nama'] }} ({{ $item['durasi'] }})</h4>
-            <div class="harga">Rp{{ number_format($item['harga'],0,',','.') }}</div>
+            <div class="harga">Rp{{ number_format($item['harga'],0,',','.') }} / Hari</div>
             <div class="qty">x{{ $item['quantity'] }}</div>
           </div>
         </div>
@@ -343,41 +369,33 @@
       <div class="box">
         <textarea name="pesan" rows="2" placeholder="Silakan tinggalkan pesan untuk penjual..."></textarea>
         <p style="margin-top:10px; font-size:14px; font-weight: 600; color: #ccc;">
-          Total Harga Barang ({{ count($cart) }} item): <span id="subtotalBarangDisplay" style="color:white;">Rp{{ number_format($total, 0, ',', '.') }}</span>
+          Subtotal Barang (1 Hari): <span id="subtotalBarangDisplay" style="color:white;">Rp{{ number_format($total, 0, ',', '.') }}</span>
         </p>
         </div>
-
-      {{-- Metode Pembayaran --}}
-      <div class="section-title">Pembayaran</div>
-      <div class="pembayaran">
-        <span>Metode Pembayaran:</span>
-        <span style="font-weight: 400;">Transfer Bank - Bank Jateng</span>
-        <input type="hidden" name="metode" value="Transfer Bank - Bank Jateng">
-      </div>
 
       {{-- Metode Pengiriman --}}
       <div class="section-title">Pengiriman & Pengambilan</div>
       <div class="pengiriman" style="margin-top:0;">
-        <div id="pickup" class="active" onclick="selectPengiriman('Ambil di Tempat')">
+        <div id="pickup" class="active" onclick="selectPengiriman(this, 'Ambil di Tempat')">
           <span>Ambil di Tempat (Gratis)</span>
           <span style="color: #05FF00;">Gratis</span>
         </div>
-        <div id="delivery" onclick="selectPengiriman('Diantar ke Rumah')">
+        <div id="delivery" onclick="selectPengiriman(this, 'Diantar ke Rumah')">
           <span>Diantar ke Rumah (Biaya Tambahan)</span>
           <span style="color: #ccc;">(Hubungi Admin)</span>
         </div>
       </div>
-      <input type="hidden" name="pengiriman" id="pengiriman" value="Ambil di Tempat">
+      <input type="hidden" name="pengiriman" id="pengirimanInput" value="Ambil di Tempat">
 
       {{-- Rincian Pembayaran --}}
       <div class="section-title">Rincian Pembayaran</div>
       <div class="box">
         <div class="rincian">
           <div class="rincian-row">
-            <span>Subtotal Barang</span><span id="subtotalRincian">Rp{{ number_format($total, 0, ',', '.') }}</span>
+            <span>Subtotal Barang (<span id="durasiHariText">1</span> Hari)</span><span id="subtotalRincian">Rp{{ number_format($total, 0, ',', '.') }}</span>
           </div>
           <div class="rincian-row">
-            <span>Subtotal Pengiriman</span><span id="biayaPengiriman">-</span>
+            <span>Subtotal Pengiriman</span><span id="biayaPengiriman">Rp0</span>
           </div>
           <div class="rincian-row">
             <span>Biaya Layanan</span><span>Rp7.000</span>
@@ -400,19 +418,29 @@
   </div>
 
   <script>
-    // 🔑 Data Cart dari PHP (digunakan untuk kalkulasi dinamis)
     const cartData = @json($cart);
     const biayaLayanan = 7000;
     
-    // Fungsi utama untuk menghitung total berdasarkan tanggal pengembalian
+    function formatRupiah(angka) {
+        if (typeof angka !== 'number') return '0';
+        const formatted = angka.toString().split('').reverse().join('');
+        const ribuan = formatted.match(/\d{1,3}/g).join('.').split('').reverse().join('');
+        return ribuan;
+    }
+
     function calculateTotalByDays() {
-        const dateInput = document.getElementById('tanggal_kembali');
-        const rentalDate = new Date(dateInput.value);
-        const currentDate = new Date();
-        
-        currentDate.setHours(0, 0, 0, 0);
-        
-        const diffTime = Math.abs(rentalDate.getTime() - currentDate.getTime());
+        const tanggalKembaliInput = document.getElementById('tanggal_kembali').value;
+        const hariIni = new Date();
+        hariIni.setHours(0, 0, 0, 0);
+
+        if (!tanggalKembaliInput) {
+            return { subtotalBarangBaru: @json($total), totalBaru: @json($total + 7000), rentalDays: 1 };
+        }
+
+        const tglKembali = new Date(tanggalKembaliInput);
+        tglKembali.setHours(0, 0, 0, 0);
+
+        const diffTime = tglKembali.getTime() - hariIni.getTime();
         let rentalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
         if (rentalDays < 1 || isNaN(rentalDays)) {
@@ -428,24 +456,36 @@
             }
         }
 
-        const totalBaru = subtotalBarangBaru + biayaLayanan;
-        
-        return { subtotalBarangBaru, totalBaru };
+        const biayaKirimNominal = 0;
+        const totalBaru = subtotalBarangBaru + biayaKirimNominal + biayaLayanan;
+
+        return { subtotalBarangBaru, totalBaru, rentalDays };
     }
 
     function updateDisplay() {
-        const { subtotalBarangBaru, totalBaru } = calculateTotalByDays();
+        const { subtotalBarangBaru, totalBaru, rentalDays } = calculateTotalByDays();
         
-        document.getElementById('subtotalBarangDisplay').textContent = 'Rp' + formatRupiah(subtotalBarangBaru);
+        document.getElementById('subtotalBarangDisplay').textContent = 'Rp' + formatRupiah(subtotalBarangBaru);        
+        document.getElementById('durasiHariText').textContent = rentalDays;
         document.getElementById('subtotalRincian').textContent = 'Rp' + formatRupiah(subtotalBarangBaru);
-
         document.getElementById('totalAkhir').textContent = 'Rp' + formatRupiah(totalBaru);
         document.getElementById('nominalFooter').textContent = 'Rp' + formatRupiah(totalBaru);
         
-        selectPengiriman(document.getElementById('pengiriman').value);
+        selectPengiriman(document.querySelector('.pengiriman div.active'), document.getElementById('pengirimanInput').value);
+
     }
     
-    function selectPengiriman(method) {
+    function selectPaymentMethod(element, method) {
+        document.querySelectorAll('.payment-option-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        element.classList.add('selected');
+        document.getElementById('metodePembayaran').value = method;
+    }
+
+
+    function selectPengiriman(element, method) {
       document.getElementById('pickup').classList.remove('active');
       document.getElementById('delivery').classList.remove('active');
       
@@ -453,21 +493,18 @@
       
       if (method === 'Ambil di Tempat') {
         document.getElementById('pickup').classList.add('active');
+        biayaKirimDisplay = 'Rp0';
       } else {
         document.getElementById('delivery').classList.add('active');
         biayaKirimDisplay = '(Hubungi Admin)';
       }
       
       document.getElementById('biayaPengiriman').textContent = biayaKirimDisplay;
-      document.getElementById('pengiriman').value = method;
+      document.getElementById('pengirimanInput').value = method;
+        
+        updateDisplay(); 
     }
     
-    function formatRupiah(angka) {
-        let reverse = angka.toString().split('').reverse().join(''),
-        ribuan = reverse.match(/\d{1,3}/g);
-        ribuan = ribuan.join('.').split('').reverse().join('');
-        return ribuan;
-    }
 
     document.addEventListener('DOMContentLoaded', function() {
         const popup = document.getElementById('notificationPopup');
@@ -496,12 +533,13 @@
             if (!dateInput.value) {
                 dateInput.value = tomorrowFormatted;
             }
-            
-            dateInput.addEventListener('change', updateDisplay); 
         }
 
         updateDisplay();
-        selectPengiriman('Ambil di Tempat');
+        
+        selectPaymentMethod(document.querySelector('.payment-option-btn[data-method="QRIS"]'), 'QRIS');
+        
+        selectPengiriman(document.querySelector('.pengiriman #pickup'), 'Ambil di Tempat');
     });
   </script>
 

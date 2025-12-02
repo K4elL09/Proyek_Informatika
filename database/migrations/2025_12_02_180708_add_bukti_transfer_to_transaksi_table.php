@@ -10,11 +10,11 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::table('transaksi', function (Blueprint $table) {
-// BENAR
-$table->string('status')->default('Disewa');    });
-}
+    {
+        Schema::table('transaksi', function (Blueprint $table) {
+            $table->string('bukti_transfer', 255)->nullable()->after('status');
+        });
+    }
 
     /**
      * Reverse the migrations.
@@ -22,7 +22,7 @@ $table->string('status')->default('Disewa');    });
     public function down(): void
     {
         Schema::table('transaksi', function (Blueprint $table) {
-            //
+            $table->dropColumn('bukti_transfer');
         });
     }
 };
