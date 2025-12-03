@@ -46,6 +46,17 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/home', [PageController::class, 'home'])->name('home');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     
+    // Rute untuk Update Foto
+    Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
+    
+    // Rute untuk Password
+    Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit.password');
+    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update.password');
+    
+    // Rute untuk Telepon (GET: tampilkan form, POST: proses update)
+    Route::get('/profile/edit-phone', [ProfileController::class, 'editPhone'])->name('profile.edit.phone');
+    Route::post('/profile/update-phone', [ProfileController::class, 'updatePhone'])->name('profile.update.phone'); // <<< INI YANG HILANG
+
     // Rute Konfirmasi Pembayaran User
     Route::get('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'showKonfirmasiPembayaran'])->name('pembayaran.konfirmasi.show');
     Route::post('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'konfirmasiPembayaran'])->name('pembayaran.konfirmasi');
