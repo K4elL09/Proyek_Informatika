@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    // ... (fungsi tambah, index, update, hapus, checkout, sewaLangsung TETAP SAMA) ...
+    // Fungsi yang sudah ada (tambah, update, hapus, sewaLangsung) tidak berubah
     public function tambah(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -24,27 +24,62 @@ class CartController extends Controller
             ];
         }
         session()->put('cart', $cart);
-        return redirect()->route('keranjang.index')->with('success', 'Produk ditambahkan!');
+        // Menggunakan 'success' untuk memicu popup hijau
+        return redirect()->back()
+    ->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
-    public function index() { $cart = session()->get('cart', []); return view('keranjang', compact('cart')); }
+    
+    public function index() { 
+        $cart = session()->get('cart', []); 
+        return view('keranjang', compact('cart')); 
+    }
+    
     public function update(Request $request, $id) {
         $cart = session()->get('cart', []);
+        
         if (isset($cart[$id])) {
-            $cart[$id]['quantity'] = $request->input('quantity');
+            $newQuantity = (int)$request->input('quantity');
+
+            if ($newQuantity < 1) {
+                 // Jika quantity <= 0, hapus item
+                 return $this->hapus($id);
+            }
+            
+            $cart[$id]['quantity'] = $newQuantity;
             session()->put('cart', $cart);
+            return redirect()->route('keranjang.index');
         }
         return redirect()->route('keranjang.index');
     }
+    
     public function hapus($id) {
         $cart = session()->get('cart', []);
-        if (isset($cart[$id])) { unset($cart[$id]); session()->put('cart', $cart); }
+        if (isset($cart[$id])) { 
+            unset($cart[$id]); 
+            session()->put('cart', $cart); 
+            // Menggunakan 'success' untuk memicu popup hijau
+            return redirect()->route('keranjang.index')->with('success', 'Produk berhasil dihapus dari keranjang.');
+        }
         return redirect()->route('keranjang.index');
     }
+    
+    /**
+     * FUNGSI INI DIVERIFIKASI UNTUK MENCEGAH CHECKOUT SAAT KERANJANG KOSONG
+     */
     public function checkout() {
         $cart = session()->get('cart', []);
+        
+        // --- VALIDASI TAMBAHAN ---
+        if (empty($cart)) {
+            // Menggunakan 'error' untuk memicu popup merah
+            return redirect()->route('keranjang.index')->with('error', 'Keranjang Anda masih kosong. Silakan tambahkan produk.');
+        }
+        // --- AKHIR VALIDASI ---
+        
         $total = collect($cart)->sum(function ($item) { return $item['harga'] * $item['quantity']; });
         return view('checkout', compact('cart', 'total'));
     }
+    
     public function sewaLangsung($id) {
         session()->forget('cart'); 
         $product = Product::findOrFail($id);
@@ -53,7 +88,6 @@ class CartController extends Controller
         session()->put('cart', $cart);
         return view('checkout', compact('cart', 'total'));
     }
-    // ... (Batas fungsi lama) ...
 
     /**
      * 1. PROSES CHECKOUT (User)

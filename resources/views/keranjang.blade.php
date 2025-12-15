@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Keranjangku</title>
+  <title>Keranjang</title>
+
   <style>
     body { background-color: #000; font-family: 'Poppins', sans-serif; color: #fff; margin: 0; padding: 0; }
     .container { max-width: 900px; margin: 40px auto; background-color: #111; border-radius: 12px; padding: 20px 40px; box-shadow: 0 0 15px rgba(0,0,0,0.5);}
@@ -13,154 +14,155 @@
     .info { flex: 1;}
     .info h4 { font-size: 15px; margin: 0 0 8px 0;}
     .info .harga { color: #00ff77; font-size: 13px; font-weight: 600; margin-bottom: 10px;}
-    
-    .quantity-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 5px;
-      margin-bottom: 5px;
-    }
-    .quantity-wrapper form {
-      margin: 0;
-    }
+
+    .quantity-wrapper { display: flex; align-items: center; gap: 8px; }
     .quantity-wrapper button {
-      background: #000;
-      color: #fff;
-      border: 1px solid #fff;
-      width: 28px;
-      height: 28px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
-      transition: all 0.2s;
-    }
-    .quantity-wrapper button:hover {
-      background: #00ff77;
-      color: #000;
-    }
-    .quantity-wrapper span {
-      font-size: 14px;
-      font-weight: bold;
-      min-width: 25px;
-      text-align: center;
+      background: #000; color: #fff; border: 1px solid #fff;
+      width: 28px; height: 28px; border-radius: 5px; cursor: pointer;
     }
 
-    .hapus-btn { background: none; border: none; color: #ff5555; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
-    .total-bar { background-color: #3C3B3B; border-radius: 8px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; margin-top: 30px; font-size: 16px; font-weight: 600;}
-    .total-bar .total { color: #00FF77;}
-    .checkout-btn { background-color: #00AA6C; border: none; color: #fff; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: 600;}
-    .checkout-btn:hover { background-color: #00cc88;}
+    .hapus-btn { background: none; border: none; color: #ff5555; font-weight: bold; cursor: pointer; }
+
+    .total-bar {
+      background-color: #3C3B3B;
+      border-radius: 8px;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .total { color: #00FF77; }
+
+    .checkout-btn {
+      background-color: #00AA6C;
+      border: none;
+      color: #fff;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .checkout-btn:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
 
     .notification-popup {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50px);
-        
-        background-color: #00AA6C;
-        color: white;
-        padding: 15px 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        z-index: 1000;
-        opacity: 0; 
-        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-        font-weight: 600;
-    }
-    .notification-popup.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0); 
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50px);
+      background-color: #00AA6C;
+      color: #fff;
+      padding: 15px 25px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: 0.3s;
+      font-weight: 600;
+      z-index: 999;
     }
 
+    .notification-popup.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
-    
-    <div id="notificationPopup" class="notification-popup">
-    </div>
 
-  <div class="container">
-    <div class="header">
-      <span>Keranjangku</span>
-      <a href="{{ route('home') }}" style="color:#00FF77; text-decoration:none;">← Kembali</a>
-    </div>
+<div id="notificationPopup" class="notification-popup"></div>
 
-    {{-- ⚠️ INI ADALAH PERUBAHAN UTAMA: Notifikasi statis dihapus dan diganti dengan elemen tersembunyi untuk dibaca JS --}}
-    @if(session('success'))
-      <p id="sessionSuccessMessage" style="display: none;">{{ session('success') }}</p>
-    @endif
+<div class="container">
+  <div class="header">
+    <span>Keranjangku</span>
+    <a href="{{ route('home') }}" style="color:#00FF77;text-decoration:none;">← Kembali</a>
+  </div>
 
-    @php $total = 0; @endphp
+  {{-- SESSION MESSAGE --}}
+  @if(session('success'))
+    <p id="successMsg" hidden>{{ session('success') }}</p>
+  @endif
 
-    @forelse($cart as $id => $item)
-      @php $total += $item['harga'] * $item['quantity']; @endphp
-      <div class="produk">
-        <img src="{{ asset('images/' . $item['gambar']) }}" alt="{{ $item['nama'] }}">
-        <div class="info">
-          <h4>{{ $item['nama'] }}</h4>
-          <div class="harga">Rp{{ number_format($item['harga'], 0, ',', '.') }} / {{ $item['durasi'] }}</div>
+  @if(session('error'))
+    <p id="errorMsg" hidden>{{ session('error') }}</p>
+  @endif
 
-          {{-- Tombol Quantity sejajar --}}
-          <div class="quantity-wrapper">
-            {{-- Tombol minus --}}
-            <form action="{{ route('keranjang.update', $id) }}" method="POST">
-              @csrf
-              <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
-              <button type="submit">-</button>
-            </form>
+  @php $total = 0; @endphp
 
-            <span>{{ $item['quantity'] }}</span>
+  @forelse($cart as $id => $item)
+    @php $total += $item['harga'] * $item['quantity']; @endphp
 
-            {{-- Tombol plus --}}
-            <form action="{{ route('keranjang.update', $id) }}" method="POST">
-              @csrf
-              <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">
-              <button type="submit">+</button>
-            </form>
-          </div>
+    <div class="produk">
+      <img src="{{ asset('images/'.$item['gambar']) }}">
+      <div class="info">
+        <h4>{{ $item['nama'] }}</h4>
+        <div class="harga">Rp{{ number_format($item['harga']) }}</div>
 
-          {{-- Tombol hapus --}}
-          <form action="{{ route('keranjang.hapus', $id) }}" method="POST">
+        <div class="quantity-wrapper">
+          <form method="POST" action="{{ route('keranjang.update',$id) }}">
             @csrf
-            <button type="submit" class="hapus-btn">Hapus</button>
+            <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
+            <button>-</button>
+          </form>
+
+          <span>{{ $item['quantity'] }}</span>
+
+          <form method="POST" action="{{ route('keranjang.update',$id) }}">
+            @csrf
+            <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">
+            <button>+</button>
           </form>
         </div>
+
+        <form method="POST" action="{{ route('keranjang.hapus',$id) }}">
+          @csrf
+          <button class="hapus-btn">Hapus</button>
+        </form>
       </div>
-    @empty
-      <p>Keranjang masih kosong.</p>
-    @endforelse
+    </div>
+  @empty
+    <p>Keranjang masih kosong.</p>
+  @endforelse
 
-    <div class="total-bar">
-  <span>Total <span class="total">Rp{{ number_format($total, 0, ',', '.') }}</span></span>
-  <form action="{{ route('checkout') }}" method="GET">
-    <button type="submit" class="checkout-btn">
-      Checkout ({{ count($cart) }})
-    </button>
-  </form>
-</div>
+  {{-- CHECKOUT --}}
+  <div class="total-bar">
+    <span>Total <span class="total">Rp{{ number_format($total) }}</span></span>
+
+    <form action="{{ route('checkout') }}" method="GET">
+      <button class="checkout-btn" {{ count($cart) === 0 ? 'disabled' : '' }}>
+        Checkout ({{ count($cart) }})
+      </button>
+    </form>
+  </div>
 </div>
 
-{{-- 🔑 SCRIPT JAVASCRIPT UNTUK MENAMPILKAN POPUP --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const popup = document.getElementById('notificationPopup');
-        const successMessageElement = document.getElementById('sessionSuccessMessage');
+document.addEventListener('DOMContentLoaded', () => {
+  const popup = document.getElementById('notificationPopup');
+  const success = document.getElementById('successMsg');
+  const error = document.getElementById('errorMsg');
 
-        if (successMessageElement) {
-            const message = successMessageElement.textContent.trim();
-            if (message) {
-                popup.textContent = message;
-                
-                popup.classList.add('show');
+  let msg = '';
+  let isError = false;
 
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                }, 3000);
-            }
-        }
-    });
+  if (success) msg = success.innerText;
+  if (error) { msg = error.innerText; isError = true; }
+
+  if (msg) {
+    popup.innerText = msg;
+    popup.style.backgroundColor = isError ? '#ff4444' : '#00AA6C';
+    popup.classList.add('show');
+
+    setTimeout(() => popup.classList.remove('show'), 3000);
+  }
+});
 </script>
+
 </body>
 </html>
