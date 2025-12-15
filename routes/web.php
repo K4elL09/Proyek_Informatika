@@ -10,6 +10,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StokController;
+use App\Http\Controllers\ReviewController;
 
 // ====================
 // REDIRECT ROOT
@@ -40,26 +41,27 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.po
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ====================
-// USER AREA
+// USER AREA (Akses Wajib Login)
 // ====================
 Route::middleware(['auth:web'])->group(function () {
+    // HOME & PROFILE
     Route::get('/home', [PageController::class, 'home'])->name('home');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     
-    // Rute untuk Update Foto
+    // Profile Updates
     Route::post('/profile/update-photo', [ProfileController::class, 'updatePhoto'])->name('profile.update.photo');
-    
-    // Rute untuk Password
     Route::get('/profile/edit-password', [ProfileController::class, 'editPassword'])->name('profile.edit.password');
     Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update.password');
-    
-    // Rute untuk Telepon (GET: tampilkan form, POST: proses update)
     Route::get('/profile/edit-phone', [ProfileController::class, 'editPhone'])->name('profile.edit.phone');
-    Route::post('/profile/update-phone', [ProfileController::class, 'updatePhone'])->name('profile.update.phone'); // <<< INI YANG HILANG
-
-    // Rute Konfirmasi Pembayaran User
+    Route::post('/profile/update-phone', [ProfileController::class, 'updatePhone'])->name('profile.update.phone');
+    
+    // RUTE KONFIRMASI PEMBAYARAN
     Route::get('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'showKonfirmasiPembayaran'])->name('pembayaran.konfirmasi.show');
     Route::post('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'konfirmasiPembayaran'])->name('pembayaran.konfirmasi');
+
+    // RUTE ULASAN
+    Route::get('/produk/{productId}/ulasan', [ReviewController::class, 'index'])->name('review.index');
+    Route::post('/produk/{productId}/ulasan', [ReviewController::class, 'store'])->name('review.store');
 });
 
 // ====================
@@ -95,16 +97,9 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 });
 
 // ====================
-// FALLBACK
+// PUBLIC/GLOBAL ROUTES
 // ====================
 Route::fallback(fn() => redirect()->route('onboarding.slide1'));
-
-// ====================
-// PUBLIC / E-COMMERCE
-// ====================
-Route::get('/ulasan', function () {
-    return view('ulasan');
-});
 
 Route::get('/produk/{id}', [ProductController::class, 'show'])->name('produk.show');
 

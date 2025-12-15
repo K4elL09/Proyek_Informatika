@@ -76,7 +76,7 @@
                     </svg>
                 </div>
                 <input type="password" id="password" name="password" placeholder="Password" required>
-                <button type="button" class="toggle-password" onclick="togglePassword('password')">👁</button>
+                <button type="button" class="toggle-password" onclick="togglePassword('password')"></button>
             </div>
 
             <div class="input-group">
@@ -86,7 +86,7 @@
                     </svg>
                 </div>
                 <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Konfirmasi Password" required>
-                <button type="button" class="toggle-password" onclick="togglePassword('password_confirmation')">👁</button>
+                <button type="button" class="toggle-password" onclick="togglePassword('password_confirmation')"></button>
             </div>
 
             <button type="submit" class="btn-green">Daftar</button>

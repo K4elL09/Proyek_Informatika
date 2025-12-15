@@ -165,19 +165,18 @@
       </div>
     </div>
     
-    {{-- PHP untuk menghitung Durasi Sewa --}}
     @php
-        // Menggunakan startOfDay agar perhitungan hari akurat
         $tanggalSewa = \Carbon\Carbon::parse($transaksi->tanggal_sewa)->startOfDay();
         $tanggalKembali = \Carbon\Carbon::parse($transaksi->tanggal_kembali)->startOfDay();
         $rentalDays = $tanggalSewa->diffInDays($tanggalKembali);
-        if ($rentalDays < 1) $rentalDays = 1; // Minimal 1 hari
+        if ($rentalDays < 1) $rentalDays = 1;
 
         $biayaLayanan = 7000;
         $subtotalBarang = $transaksi->total - $biayaLayanan;
+
+        $firstProductId = $transaksi->penyewaan->first()->product_id ?? null;
     @endphp
 
-    {{-- Detail Pelanggan --}}
     <div class="section-title">Detail Pelanggan</div>
     <div class="detail-box">
         Nama Pemesan: <strong>{{ strtoupper($transaksi->nama) }}</strong><br>
@@ -185,7 +184,6 @@
         Alamat: <span>{{ $transaksi->alamat }}</span>
     </div>
 
-    {{-- Detail Pengambilan & Pengembalian --}}
     <div class="section-title">Durasi & Pengembalian</div>
     <div class="detail-box">
         Pengiriman/Pengambilan: <strong>Ambil di Tempat</strong> <br>
@@ -194,7 +192,6 @@
         Tanggal Pengembalian: <span style="color: #F5893A;">{{ $tanggalKembali->format('d M Y') }}</span>
     </div>
     
-    {{-- Barang Dipesan --}}
     <div class="section-title">Barang Dipesan</div>
     @foreach($transaksi->penyewaan as $item)
       <div class="produk">
@@ -202,7 +199,6 @@
         <div class="produk-info">
           <h4>{{ $item->product->nama_produk }}</h4>
           
-          {{-- Hitung Harga Item --}}
           @php
               $hargaSatuanPerHari = $item->product->harga;
               $totalHargaItemPerHari = $hargaSatuanPerHari * $item->quantity;
@@ -215,7 +211,6 @@
       </div>
     @endforeach
 
-    {{-- Detail Pembayaran --}}
     <div class="section-title">Rincian & Total Pembayaran</div>
     <div class="detail-box">
         Metode Pembayaran: <span class="value">{{ $transaksi->metode }}</span><br>
@@ -230,7 +225,7 @@
 
     <div class="button-row">
       <a href="{{ route('home') }}" class="btn secondary">Sewa Lagi</a>
-      <a href="#" class="btn">Beri Ulasan</a>
+      <a href="{{ $firstProductId ? route('review.index', $firstProductId) : '#' }}" class="btn">Beri Ulasan</a>
     </div>
   </div>
 </body>

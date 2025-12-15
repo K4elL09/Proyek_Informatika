@@ -108,7 +108,7 @@
       margin-bottom: 10px;
     }
 
-    textarea, input[type="date"] {
+    textarea, input[type="date"], select {
       width: 100%;
       background-color: #1a1a1a;
       border: 1px solid #555;
@@ -119,8 +119,9 @@
       resize: none;
       transition: border-color 0.2s;
       box-sizing: border-box;
+      margin-top: 8px; /* Jarak antar field */
     }
-    textarea:focus, input[type="date"]:focus {
+    textarea:focus, input[type="date"]:focus, select:focus {
         border-color: #00AA6C;
         outline: none;
     }
@@ -158,6 +159,7 @@
       border-top: 1px dashed #555;
     }
 
+    /* PAYMENT BUTTONS */
     .payment-options {
         display: flex;
         gap: 15px;
@@ -300,7 +302,7 @@
       <a href="{{ route('keranjang.index') }}">← Kembali</a>
     </div>
 
-    <form action="{{ route('checkout.process') }}" method="POST">
+    <form id="checkoutForm" action="{{ route('checkout.process') }}" method="POST">
       @csrf
       
       {{-- ⚠️ Handle Error/Success Messages di sini (jika ada) --}}
@@ -314,11 +316,19 @@
       @endif
 
       {{-- Data Alamat --}}
-      <div class="section-title">Alamat Pengiriman/Pengambilan</div>
+      <div class="section-title">Alamat</div>
       <div class="box alamat">
         <div class="alamat-info">
           <strong>{{ auth()->user()->name ?? 'Penyewa Guest' }}</strong><br>
-          <textarea name="alamat" rows="2" placeholder="Masukkan alamat lengkap kamu (Wajib diisi)" required></textarea>
+          
+          <select id="provinsi" required onchange="loadRegencies()"></select>
+          <select id="kabupaten" required disabled onchange="loadDistricts()"></select>
+          <select id="kecamatan" required disabled></select>
+
+          <label for="detail_alamat" style="display: block; font-size: 14px; margin-top: 15px; margin-bottom: 0px; color: #ccc;">Detail Jalan:</label>
+          <textarea name="detail_alamat" id="detail_alamat" rows="2" placeholder="Detail jalan, RT/RW, dan patokan..." required></textarea>
+          
+          <input type="hidden" name="alamat" id="finalAlamat" required>
         </div>
       </div>
 
@@ -334,7 +344,7 @@
         <p style="font-size: 12px; color: #ccc; margin-top: 10px;">*Minimal pengembalian adalah besok.</p>
       </div>
 
-      {{-- 🔑 METODE PEMBAYARAN BARU --}}
+      {{-- METODE PEMBAYARAN BARU --}}
       <div class="section-title">Pilih Metode Pembayaran</div>
       <div class="payment-options">
           <button type="button" class="payment-option-btn selected" data-method="QRIS" onclick="selectPaymentMethod(this, 'QRIS')">
@@ -420,6 +430,136 @@
   <script>
     const cartData = @json($cart);
     const biayaLayanan = 7000;
+    const API_BASE_URL = 'https://www.emsifa.com/api-wilayah-indonesia/api/';
+    
+    // Element Selectors
+    const provinceSelect = document.getElementById('provinsi');
+    const regencySelect = document.getElementById('kabupaten');
+    const districtSelect = document.getElementById('kecamatan');
+    const detailAlamatInput = document.getElementById('detail_alamat');
+    const finalAlamatInput = document.getElementById('finalAlamat');
+    const checkoutForm = document.getElementById('checkoutForm');
+
+
+    // === 🔑 LOGIKA API WILAYAH INDONESIA ===
+
+    function createOption(text, value, disabled = false) {
+        const option = document.createElement('option');
+        option.textContent = text;
+        option.value = value;
+        option.disabled = disabled;
+        return option;
+    }
+
+    // 1. Load Provinsi
+    async function loadProvinces() {
+        provinceSelect.innerHTML = '';
+        provinceSelect.appendChild(createOption('Memuat Provinsi...', '', true));
+        provinceSelect.disabled = true;
+
+        try {
+            const response = await fetch(API_BASE_URL + 'provinces.json');
+            const data = await response.json();
+            
+            provinceSelect.innerHTML = '';
+            provinceSelect.appendChild(createOption('Pilih Provinsi', '', true));
+            provinceSelect.disabled = false;
+            
+            data.forEach(province => {
+                provinceSelect.appendChild(createOption(province.name, province.id));
+            });
+            provinceSelect.selectedIndex = 0;
+
+        } catch (error) {
+            console.error('Gagal memuat provinsi:', error);
+            provinceSelect.appendChild(createOption('Gagal memuat', '', true));
+        }
+    }
+
+    // 2. Load Kabupaten/Kota
+    async function loadRegencies() {
+        const provinceId = provinceSelect.value;
+        regencySelect.innerHTML = '';
+        districtSelect.innerHTML = '';
+        
+        regencySelect.appendChild(createOption('Memuat Kabupaten/Kota...', '', true));
+        regencySelect.disabled = true;
+        districtSelect.disabled = true;
+        
+        if (!provinceId) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}regencies/${provinceId}.json`);
+            const data = await response.json();
+            
+            regencySelect.innerHTML = '';
+            regencySelect.appendChild(createOption('Pilih Kabupaten/Kota', '', true));
+            regencySelect.disabled = false;
+
+            data.forEach(regency => {
+                regencySelect.appendChild(createOption(regency.name, regency.id));
+            });
+            regencySelect.selectedIndex = 0;
+        } catch (error) {
+            console.error('Gagal memuat kabupaten:', error);
+            regencySelect.appendChild(createOption('Gagal memuat', '', true));
+        }
+    }
+
+    // 3. Load Kecamatan
+    async function loadDistricts() {
+        const regencyId = regencySelect.value;
+        districtSelect.innerHTML = '';
+        
+        districtSelect.appendChild(createOption('Memuat Kecamatan...', '', true));
+        districtSelect.disabled = true;
+        
+        if (!regencyId) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}districts/${regencyId}.json`);
+            const data = await response.json();
+            
+            districtSelect.innerHTML = '';
+            districtSelect.appendChild(createOption('Pilih Kecamatan', '', true));
+            districtSelect.disabled = false;
+
+            data.forEach(district => {
+                districtSelect.appendChild(createOption(district.name, district.id));
+            });
+            districtSelect.selectedIndex = 0;
+        } catch (error) {
+            console.error('Gagal memuat kecamatan:', error);
+            districtSelect.appendChild(createOption('Gagal memuat', '', true));
+        }
+    }
+
+    // 4. Compile Final Address
+    function compileAddress() {
+        const provName = provinceSelect.options[provinceSelect.selectedIndex]?.textContent || '';
+        const regencyName = regencySelect.options[regencySelect.selectedIndex]?.textContent || '';
+        const districtName = districtSelect.options[districtSelect.selectedIndex]?.textContent || '';
+        const detailJalan = detailAlamatInput.value.trim();
+
+        const fullAddress = `${detailJalan}, Kec. ${districtName}, ${regencyName}, Prov. ${provName}`;
+        
+        finalAlamatInput.value = fullAddress;
+    }
+    
+        [provinceSelect, regencySelect, districtSelect, detailAlamatInput].forEach(element => {
+        if (element) element.addEventListener('change', compileAddress);
+        if (element) element.addEventListener('input', compileAddress);
+    });
+
+    checkoutForm.addEventListener('submit', function(e) {
+        compileAddress();
+        
+        if (!provinceSelect.value || !regencySelect.value || !districtSelect.value || finalAlamatInput.value.length < 10) {
+            alert("Mohon lengkapi seluruh kolom wilayah dan detail jalan.");
+            e.preventDefault();
+            return false;
+        }
+    });
     
     function formatRupiah(angka) {
         if (typeof angka !== 'number') return '0';
@@ -484,7 +624,6 @@
         document.getElementById('metodePembayaran').value = method;
     }
 
-
     function selectPengiriman(element, method) {
       document.getElementById('pickup').classList.remove('active');
       document.getElementById('delivery').classList.remove('active');
@@ -505,21 +644,8 @@
         updateDisplay(); 
     }
     
-
     document.addEventListener('DOMContentLoaded', function() {
-        const popup = document.getElementById('notificationPopup');
-        const successMessageElement = document.getElementById('sessionSuccessMessage');
-
-        if (successMessageElement) {
-            const message = successMessageElement.textContent.trim();
-            if (message) {
-                popup.textContent = message;
-                popup.classList.add('show');
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                }, 3000);
-            }
-        }
+        loadProvinces(); // Mulai memuat provinsi saat DOMContentLoaded
         
         const today = new Date();
         const tomorrow = new Date(today);
@@ -535,10 +661,22 @@
             }
         }
 
+        const popup = document.getElementById('notificationPopup');
+        const successMessageElement = document.getElementById('sessionSuccessMessage');
+
+        if (successMessageElement) {
+            const message = successMessageElement.textContent.trim();
+            if (message) {
+                popup.textContent = message;
+                popup.classList.add('show');
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
         updateDisplay();
-        
         selectPaymentMethod(document.querySelector('.payment-option-btn[data-method="QRIS"]'), 'QRIS');
-        
         selectPengiriman(document.querySelector('.pengiriman #pickup'), 'Ambil di Tempat');
     });
   </script>
