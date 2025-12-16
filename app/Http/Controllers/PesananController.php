@@ -8,30 +8,23 @@ use Illuminate\Support\Facades\Auth;
 
 class PesananController extends Controller
 {
-    /**
-     * Menampilkan Daftar Pesanan Saya (Ala Shopee)
-     */
     public function index(Request $request)
     {
-        // 1. Ambil Parameter Status dari URL (?status=...)
         $statusFilter = $request->query('status', 'semua');
 
-        // 2. Query Dasar: Ambil transaksi milik user yang sedang login
+        // PENTING: Kita pakai 'items.product' karena di Transaksi.php ada fungsi items()
         $query = Transaksi::where('user_id', Auth::id())
-                          ->with('items.product') // Eager load produk agar query ringan
+                          ->with('items.product') 
                           ->orderBy('created_at', 'desc');
 
-        // 3. Logika Filtering Tab ala Shopee
         switch ($statusFilter) {
             case 'belum_bayar':
                 $query->where('status', 'Menunggu Pembayaran');
                 break;
             case 'sedang_dikemas': 
-                // Di rental, ini kita anggap 'Sedang Proses' atau 'Menunggu Verifikasi'
                 $query->where('status', 'Menunggu Verifikasi');
                 break;
             case 'dikirim':
-                // Di rental, ini berarti barang sedang 'Disewa' (Di bawa user)
                 $query->where('status', 'Disewa');
                 break;
             case 'selesai':
@@ -40,7 +33,6 @@ class PesananController extends Controller
             case 'dibatalkan':
                 $query->where('status', 'Dibatalkan');
                 break;
-            // Case 'semua' tidak perlu filter, tampilkan apa adanya
         }
 
         $orders = $query->get();
@@ -48,14 +40,10 @@ class PesananController extends Controller
         return view('pesanan.index', compact('orders', 'statusFilter'));
     }
 
-    /**
-     * Halaman Sukses (Kode Lama Anda)
-     */
     public function selesai($id)
     {
         $transaksi = Transaksi::with('items.product')->findOrFail($id);
         
-        // Cek apakah user berhak melihat ini
         if (Auth::check() && $transaksi->user_id != Auth::id()) {
             return redirect()->route('home');
         }
