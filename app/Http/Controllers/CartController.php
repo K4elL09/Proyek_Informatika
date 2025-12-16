@@ -150,6 +150,7 @@ class CartController extends Controller
     public function showKonfirmasiPembayaran($transaksiId)
     {
         $transaksi = Transaksi::findOrFail($transaksiId);
+        // Validasi akses user
         if (Auth::check() && Auth::id() !== $transaksi->user_id) {
              return redirect()->route('home')->with('error', 'Akses ditolak.');
         }
@@ -190,5 +191,28 @@ class CartController extends Controller
             DB::rollBack();
             return back()->with('error', 'Gagal upload: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * [BARU] User Membatalkan Pesanan
+     * Hanya bisa jika status belum 'Disewa' atau 'Selesai'
+     */
+    public function batalkanPesananUser($id)
+    {
+        // Pastikan hanya pemilik pesanan yang bisa membatalkan
+        $transaksi = Transaksi::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        // Validasi: User tidak bisa membatalkan jika barang sudah dibawa (Disewa) atau Selesai
+        if (in_array($transaksi->status, ['Disewa', 'Selesai', 'Dibatalkan'])) {
+            return back()->with('error', 'Pesanan tidak dapat dibatalkan karena sedang diproses atau sudah selesai.');
+        }
+
+        // Update status
+        $transaksi->status = 'Dibatalkan';
+        $transaksi->save();
+
+        // Stok tidak perlu dikembalikan karena saat 'Menunggu Pembayaran' stok belum dikurangi.
+        
+        return redirect()->route('home')->with('success', 'Pesanan berhasil dibatalkan.');
     }
 }

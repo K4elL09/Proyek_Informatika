@@ -55,6 +55,9 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/profile/edit-phone', [ProfileController::class, 'editPhone'])->name('profile.edit.phone');
     Route::post('/profile/update-phone', [ProfileController::class, 'updatePhone'])->name('profile.update.phone');
     
+    // [BARU] PESANAN SAYA (Ala Shopee)
+    Route::get('/pesanan-saya', [PesananController::class, 'index'])->name('pesanan.index');
+
     // RUTE KONFIRMASI PEMBAYARAN
     Route::get('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'showKonfirmasiPembayaran'])->name('pembayaran.konfirmasi.show');
     Route::post('/konfirmasi-pembayaran/{transaksiId}', [CartController::class, 'konfirmasiPembayaran'])->name('pembayaran.konfirmasi');
@@ -62,6 +65,9 @@ Route::middleware(['auth:web'])->group(function () {
     // RUTE ULASAN
     Route::get('/produk/{productId}/ulasan', [ReviewController::class, 'index'])->name('review.index');
     Route::post('/produk/{productId}/ulasan', [ReviewController::class, 'store'])->name('review.store');
+    
+    // Rute Batalkan Pesanan User
+    Route::post('/pesanan/batalkan/{id}', [CartController::class, 'batalkanPesananUser'])->name('pesanan.batalkan');
 });
 
 // ====================
@@ -86,6 +92,9 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     Route::get('/pemesanan/buat/baru', [AdminController::class, 'createPemesanan'])->name('pemesanan.create');
     Route::post('/pemesanan/store', [AdminController::class, 'storePemesanan'])->name('pemesanan.store');
 
+    // Batalkan Pesanan Admin
+    Route::post('/pemesanan/batalkan/{id}', [AdminController::class, 'batalkanPesananAdmin'])->name('pemesanan.batalkan');
+
     // Pengembalian & Verifikasi
     Route::get('/pengembalian', [AdminController::class, 'pengembalian'])->name('pengembalian.index');
     
@@ -97,10 +106,8 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
 });
 
 // ====================
-// PUBLIC/GLOBAL ROUTES
+// PUBLIC/GLOBAL ROUTES (Dipindahkan ke ATAS Fallback)
 // ====================
-Route::fallback(fn() => redirect()->route('onboarding.slide1'));
-
 Route::get('/produk/{id}', [ProductController::class, 'show'])->name('produk.show');
 
 // Keranjang
@@ -116,3 +123,9 @@ Route::post('/checkout/sewa-langsung/{id}', [CartController::class, 'sewaLangsun
 
 // Halaman Sukses
 Route::get('/pesanan/selesai/{id}', [PesananController::class, 'selesai'])->name('pesanan.selesai');
+
+// ====================
+// FALLBACK (WAJIB PALING BAWAH)
+// ====================
+// Rute ini menangkap semua URL yang TIDAK ADA di atas.
+Route::fallback(fn() => redirect()->route('onboarding.slide1'));

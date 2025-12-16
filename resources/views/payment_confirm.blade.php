@@ -140,10 +140,45 @@
     .btn-submit:hover {
         background-color: #00CC88;
     }
+
+    /* --- STYLE BARU UNTUK TOMBOL BATAL --- */
+    .btn-cancel {
+        width: 100%;
+        background-color: transparent;
+        border: 1px solid #dc3545;
+        color: #dc3545;
+        font-weight: 600;
+        font-size: 14px; 
+        padding: 12px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 15px;
+    }
+    .btn-cancel:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .home-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #888;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    .home-link:hover {
+        color: white;
+    }
+
     .error-message {
         color: #ff5555;
+        background: rgba(255, 85, 85, 0.1);
+        padding: 10px;
+        border-radius: 5px;
         font-size: 13px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
     
     @media (max-width: 600px) {
@@ -163,6 +198,9 @@
 
     @if(session('error'))
         <div class="error-message" style="text-align: center;">{{ session('error') }}</div>
+    @endif
+    @if(session('success'))
+        <div class="error-message" style="color: #00AA6C; background: rgba(0, 170, 108, 0.1); text-align: center;">{{ session('success') }}</div>
     @endif
 
     @php
@@ -203,28 +241,45 @@
         </div>
     </div>
 
+    {{-- FORM UPLOAD BUKTI (Hanya jika status belum selesai) --}}
+    @if(in_array($transaksi->status, ['Menunggu Pembayaran', 'Menunggu Verifikasi']))
+        <form action="{{ route('pembayaran.konfirmasi', $transaksi->id ?? 0) }}" method="POST" enctype="multipart/form-data" class="upload-section">
+            @csrf
+            
+            @if ($errors->any())
+                <div class="error-message">
+                    Mohon koreksi kesalahan berikut sebelum mengirim:
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-    <form action="{{ route('pembayaran.konfirmasi', $transaksi->id ?? 0) }}" method="POST" enctype="multipart/form-data" class="upload-section">
-        @csrf
-        
-        @if ($errors->any())
-            <div class="error-message">
-                Mohon koreksi kesalahan berikut sebelum mengirim:
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+            <label for="bukti_pembayaran">Unggah Bukti Pembayaran (Wajib):</label>
+            <input type="file" name="bukti_pembayaran" id="bukti_pembayaran" accept="image/jpeg,image/png" required>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-upload"></i> Kirim Bukti Pembayaran
+            </button>
+        </form>
 
-        <label for="bukti_pembayaran">Unggah Bukti Pembayaran (Wajib):</label>
-        <input type="file" name="bukti_pembayaran" id="bukti_pembayaran" accept="image/jpeg,image/png" required>
-        
-        <button type="submit" class="btn-submit">
-            Kirim Bukti Pembayaran
-        </button>
-    </form>
+        {{-- TOMBOL BATALKAN PESANAN --}}
+        <form action="{{ route('pesanan.batalkan', $transaksi->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini? Aksi ini tidak dapat dibatalkan.');">
+            @csrf
+            <button type="submit" class="btn-cancel">
+                <i class="fas fa-times"></i> Batalkan Pesanan
+            </button>
+        </form>
+    @else
+        <div style="text-align: center; margin-top: 20px; padding: 20px; background: #333; border-radius: 8px;">
+            <p style="color: #00FF77; margin: 0;">Status Pesanan: <strong>{{ $transaksi->status }}</strong></p>
+            <p style="color: #ccc; font-size: 13px; margin-top: 5px;">Terima kasih, pesanan Anda sedang diproses.</p>
+        </div>
+    @endif
+
+    <a href="{{ route('home') }}" class="home-link">&larr; Kembali ke Beranda</a>
   </div>
 </body>
 </html>

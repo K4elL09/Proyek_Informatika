@@ -19,26 +19,40 @@ class AdminController extends Controller
     }
 
     // --- Laporan Keuangan ---
-    public function laporan()
+    public function laporan(Request $request)
     {
-        $totalPendapatan = DB::table('transaksi')->whereIn('status', ['Disewa', 'Selesai'])->sum('total');
-        $jumlahTransaksi = DB::table('transaksi')->count(); 
-        
-        $transaksiTerbaru = DB::table('penyewaan')
-                                ->join('products', 'penyewaan.product_id', '=', 'products.id')
-                                ->select('penyewaan.*', 'products.nama_produk')
-                                ->orderBy('penyewaan.created_at', 'desc')
-                                ->take(10)
-                                ->get();
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
 
-        return view('admin.laporan.index', compact('totalPendapatan', 'jumlahTransaksi', 'transaksiTerbaru'));
+        $totalPendapatanSemua = DB::table('transaksi')->whereIn('status', ['Disewa', 'Selesai'])->sum('total');
+        $totalPendapatanBulanan = DB::table('transaksi')->whereIn('status', ['Disewa', 'Selesai'])
+            ->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->sum('total');
+        $jumlahTransaksiBulanan = DB::table('transaksi')->whereIn('status', ['Disewa', 'Selesai'])
+            ->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->count();
+
+        $itemTerjual = DB::table('penyewaan')
+            ->join('transaksi', 'penyewaan.transaksi_id', '=', 'transaksi.id')
+            ->join('products', 'penyewaan.product_id', '=', 'products.id')
+            ->select('penyewaan.*', 'products.nama_produk', 'transaksi.created_at as tanggal_transaksi', 'transaksi.status')
+            ->whereIn('transaksi.status', ['Disewa', 'Selesai'])
+            ->whereMonth('transaksi.created_at', $bulan)->whereYear('transaksi.created_at', $tahun)
+            ->orderBy('transaksi.created_at', 'desc')->get();
+
+        return view('admin.laporan.index', compact('totalPendapatanSemua', 'totalPendapatanBulanan', 'jumlahTransaksiBulanan', 'itemTerjual', 'bulan', 'tahun'));
     }
 
     // --- Informasi Pemesanan ---
-    public function pemesanan()
+    public function pemesanan(Request $request)
     {
-        $semuaPemesanan = Transaksi::with('user')->orderBy('created_at', 'desc')->get();
-        return view('admin.pemesanan.index', compact('semuaPemesanan'));
+        $status = $request->input('status');
+        $query = Transaksi::with('user')->orderBy('created_at', 'desc');
+        if ($status) {
+            $query->where('status', $status);
+        }
+        $semuaPemesanan = $query->get();
+        $listStatus = ['Menunggu Pembayaran', 'Menunggu Verifikasi', 'Disewa', 'Selesai', 'Dibatalkan'];
+
+        return view('admin.pemesanan.index', compact('semuaPemesanan', 'status', 'listStatus'));
     }
 
     public function showPemesananDetail($id)
@@ -56,100 +70,115 @@ class AdminController extends Controller
 
     public function storePemesanan(Request $request)
     {
-        // (Gunakan kode storePemesanan yang sudah saya berikan sebelumnya)
-        // Pastikan di sini stok LANGSUNG dikurangi karena offline
-        // ...
-    }
-
-
-    // ==========================================
-    // LOGIKA PENGEMBALIAN & VERIFIKASI (INTI)
-    // ==========================================
-
-    public function pengembalian()
-    {
-        // 1. Ambil data yang butuh verifikasi pembayaran
-        $transaksiVerifikasi = Transaksi::where('status', 'Menunggu Verifikasi')->orderBy('created_at', 'asc')->get();
-
-        // 2. Ambil data yang sedang disewa (barang di luar)
-        $transaksiDisewa = Transaksi::where('status', 'Disewa')->orderBy('created_at', 'asc')->get();
-
-        return view('admin.pengembalian.index', compact('transaksiVerifikasi', 'transaksiDisewa'));
-    }
-
-    /**
-     * Aksi: Admin Menyetujui Pembayaran
-     * Stok berkurang di sini (untuk pesanan online).
-     */
-    public function setujuiPembayaran($id)
-    {
-        $transaksi = Transaksi::with('items')->findOrFail($id);
-        
-        if ($transaksi->status == 'Menunggu Verifikasi') {
-            
-            DB::beginTransaction();
-            try {
-                // Cek stok dulu
-                foreach ($transaksi->items as $item) {
-                    $product = Product::find($item->product_id);
-                    if ($product->stok < $item->quantity) {
-                        return back()->with('error', "Gagal! Stok {$product->nama_produk} tidak cukup.");
-                    }
-                }
-
-                // Kurangi stok
-                foreach ($transaksi->items as $item) {
-                    $product = Product::find($item->product_id);
-                    $product->decrement('stok', $item->quantity);
-                }
-
-                // Ubah status
-                $transaksi->status = 'Disewa';
-                $transaksi->save();
-
-                DB::commit();
-                return back()->with('success', 'Pembayaran disetujui. Stok barang telah dikurangi.');
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-            }
-        }
-
-        return back()->with('error', 'Status transaksi tidak valid.');
-    }
-
-    /**
-     * Aksi: Admin Menerima Barang Kembali
-     * Stok bertambah di sini.
-     */
-    public function prosesPengembalian(Request $request)
-    {
-        $request->validate(['transaksi_id' => 'required|exists:transaksi,id']);
+        $request->validate(['nama' => 'required', 'metode' => 'required', 'products' => 'required|array', 'quantities' => 'required|array']);
 
         DB::beginTransaction();
         try {
-            $transaksi = Transaksi::with('items')->find($request->transaksi_id);
-            
-            // Ubah status
-            $transaksi->status = 'Selesai';
-            $transaksi->save();
+            $totalHargaTransaksi = 0;
+            $itemsToInsert = [];
 
-            // Kembalikan stok
-            foreach ($transaksi->items as $item) {
-                $product = Product::find($item->product_id);
-                if ($product) {
-                    $product->increment('stok', $item->quantity);
-                }
+            foreach ($request->products as $index => $productId) {
+                $product = Product::find($productId);
+                $qty = $request->quantities[$index];
+                if ($product->stok < $qty) return back()->with('error', "Stok {$product->nama_produk} tidak cukup!");
+                
+                $subtotal = $product->harga * $qty;
+                $totalHargaTransaksi += $subtotal;
+                $itemsToInsert[] = ['product' => $product, 'qty' => $qty, 'subtotal' => $subtotal];
             }
-            
-            DB::commit();
-            return redirect()->route('admin.pengembalian.index')
-                             ->with('success', 'Barang telah dikembalikan dan stok telah diperbarui.');
 
+            $transaksi = Transaksi::create([
+                'user_id' => null, 'nama' => $request->nama . ' (Offline)', 'alamat' => 'Toko Fisik',
+                'metode' => $request->metode, 'tanggal_sewa' => now(), 'tanggal_kembali' => now()->addDays(1),
+                'total' => $totalHargaTransaksi, 'status' => 'Disewa'
+            ]);
+
+            foreach ($itemsToInsert as $item) {
+                Penyewaan::create(['transaksi_id' => $transaksi->id, 'product_id' => $item['product']->id, 'quantity' => $item['qty'], 'harga' => $item['subtotal']]);
+                $item['product']->decrement('stok', $item['qty']);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.pemesanan.index')->with('success', 'Pesanan offline berhasil ditambahkan!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    // [BARU] Admin Batalkan Pesanan
+    public function batalkanPesananAdmin($id)
+    {
+        $transaksi = Transaksi::with('items')->findOrFail($id);
+        if ($transaksi->status == 'Selesai') return back()->with('error', 'Transaksi Selesai tidak bisa dibatalkan.');
+
+        DB::beginTransaction();
+        try {
+            // Jika status sebelumnya 'Disewa', kembalikan stok
+            if ($transaksi->status == 'Disewa') {
+                foreach ($transaksi->items as $item) {
+                    Product::find($item->product_id)->increment('stok', $item->quantity);
+                }
+            }
+            $transaksi->status = 'Dibatalkan';
+            $transaksi->save();
+
+            DB::commit();
+            return back()->with('success', 'Pesanan dibatalkan (Stok dikembalikan jika perlu).');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    // --- Pengembalian & Verifikasi ---
+    public function pengembalian()
+    {
+        $transaksiVerifikasi = Transaksi::where('status', 'Menunggu Verifikasi')->orderBy('created_at', 'asc')->get();
+        $transaksiDisewa = Transaksi::where('status', 'Disewa')->orderBy('created_at', 'asc')->get();
+        return view('admin.pengembalian.index', compact('transaksiVerifikasi', 'transaksiDisewa'));
+    }
+
+    public function setujuiPembayaran($id)
+    {
+        $transaksi = Transaksi::with('items')->findOrFail($id);
+        if ($transaksi->status == 'Menunggu Verifikasi') {
+            DB::beginTransaction();
+            try {
+                foreach ($transaksi->items as $item) {
+                    if (Product::find($item->product_id)->stok < $item->quantity) return back()->with('error', 'Stok habis.');
+                }
+                foreach ($transaksi->items as $item) {
+                    Product::find($item->product_id)->decrement('stok', $item->quantity);
+                }
+                $transaksi->status = 'Disewa';
+                $transaksi->save();
+                DB::commit();
+                return back()->with('success', 'Pembayaran disetujui.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->with('error', 'Error: ' . $e->getMessage());
+            }
+        }
+        return back()->with('error', 'Status invalid.');
+    }
+
+    public function prosesPengembalian(Request $request)
+    {
+        $request->validate(['transaksi_id' => 'required|exists:transaksi,id']);
+        DB::beginTransaction();
+        try {
+            $transaksi = Transaksi::with('items')->find($request->transaksi_id);
+            $transaksi->status = 'Selesai';
+            $transaksi->save();
+            foreach ($transaksi->items as $item) {
+                Product::find($item->product_id)->increment('stok', $item->quantity);
+            }
+            DB::commit();
+            return redirect()->route('admin.pengembalian.index')->with('success', 'Barang dikembalikan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 }

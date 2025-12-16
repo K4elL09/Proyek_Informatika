@@ -58,7 +58,7 @@
     .btn-submit {
         width: 100%;
         margin-top: 10px;
-        background-color: #22c55e;
+        background-color: #00AA6C;
         color: white;
         padding: 15px;
         border-radius: 12px;

@@ -107,7 +107,7 @@
     .save-btn {
         width: 100%;
         padding: 14px;
-        background: #4caf50;
+        background: #00AA6C;
         border: none;
         color: white;
         font-size: 18px;
@@ -117,7 +117,7 @@
     }
 
     .save-btn:hover {
-        background: #43a047;
+        background: #00AA6C;
     }
 
     .error {

@@ -114,6 +114,7 @@
             border-top: 1px solid #3a3839;
         }
 
+        /* Update Style untuk Tombol Pesanan agar support tag <a> */
         footer.site-footer .order-btn {
             margin-top: 100px;
             background: #00AA6C;
@@ -126,6 +127,9 @@
             width: 100%;
             max-width: 420px;
             cursor: pointer;
+            text-decoration: none; /* Hilangkan garis bawah link */
+            display: block;        /* Agar width 100% berfungsi */
+            text-align: center;    /* Agar teks di tengah */
         }
         
         .product-card {
@@ -198,14 +202,17 @@
             @yield('content')
         </main>
 
-       <footer class="site-footer">
-    @if (!Request::is('profile'))
-        <button class="order-btn">Cek Pesanan Saya</button>
-    @endif
-</footer>
+        <footer class="site-footer">
+            {{-- Tombol hanya muncul jika bukan di halaman profile --}}
+            @if (!Request::is('profile'))
+                <a href="{{ route('pesanan.index') }}" class="order-btn">
+                    Cek Pesanan Saya
+                </a>
+            @endif
+        </footer>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
 
     @stack('scripts')
 </body>
