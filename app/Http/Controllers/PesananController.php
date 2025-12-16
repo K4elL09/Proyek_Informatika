@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class PesananController extends Controller
 {
-
     public function index(Request $request)
     {
         $statusFilter = $request->query('status', 'semua');
 
+        // PENTING: Kita pakai 'items.product' karena di Transaksi.php ada fungsi items()
         $query = Transaksi::where('user_id', Auth::id())
                           ->with('items.product') 
                           ->orderBy('created_at', 'desc');
