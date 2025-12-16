@@ -62,13 +62,15 @@
       border-radius: 10px;
       padding: 12px;
       margin-bottom: 10px;
+      border: 1px solid #333;
     }
     .produk img {
       width: 80px; 
-      height: 60px; 
+      height: 80px; /* Dibuat kotak agar rapi */
       border-radius: 6px;
       margin-right: 15px;
-      object-fit: cover;
+      object-fit: cover; /* Agar gambar tidak gepeng */
+      background-color: #444;
     }
     .produk-info {
       flex: 1;
@@ -158,7 +160,8 @@
 <body>
   <div class="container">
     <div class="logo-header">
-      <img src="{{ asset('images/pdmp2.png') }}" alt="PDMP Logo">
+      {{-- Ganti dengan logo Anda jika path berbeda --}}
+      <img src="{{ asset('images/pdmp2.png') }}" alt="PDMP Logo" onerror="this.style.display='none'">
       <div class="logo-text">
         <strong>PDMP OUTDOOR</strong>
         <span>Rincian Pesanan #{{ $transaksi->id }}</span>
@@ -180,7 +183,8 @@
     <div class="section-title">Detail Pelanggan</div>
     <div class="detail-box">
         Nama Pemesan: <strong>{{ strtoupper($transaksi->nama) }}</strong><br>
-        Nomor Kontak: <span>{{ auth()->user()->no_telp ?? 'Tidak Tersedia' }}</span><br>
+        {{-- Nomor Kontak yang sudah diperbaiki --}}
+        Nomor Kontak: <span>{{ $transaksi->no_hp ?? $transaksi->user->phone ?? '-' }}</span><br>
         Alamat: <span>{{ $transaksi->alamat }}</span>
     </div>
 
@@ -195,16 +199,31 @@
     <div class="section-title">Barang Dipesan</div>
     @foreach($transaksi->penyewaan as $item)
       <div class="produk">
-        <img src="{{ asset('images/' . $item->product->gambar_produk) }}" alt="{{ $item->product->nama_produk }}">
+        
+        {{-- PERBAIKAN LOGIKA GAMBAR DI SINI --}}
+        @if($item->product)
+            <img src="{{ asset('storage/' . $item->product->gambar_produk) }}" 
+                 alt="{{ $item->product->nama_produk }}" 
+                 onerror="this.onerror=null;this.src='{{ asset('images/' . $item->product->gambar_produk) }}';">
+        @else
+            <div style="width:80px; height:80px; background:#444; margin-right:15px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#888; font-size:10px;">
+                Deleted
+            </div>
+        @endif
+
         <div class="produk-info">
-          <h4>{{ $item->product->nama_produk }}</h4>
+          @if($item->product)
+              <h4>{{ $item->product->nama_produk }}</h4>
+          @else
+              <h4 style="color:#aaa;">Produk Tidak Ditemukan</h4>
+          @endif
           
           @php
-              $hargaSatuanPerHari = $item->product->harga;
-              $totalHargaItemPerHari = $hargaSatuanPerHari * $item->quantity;
+              $hargaItem = $item->product ? $item->product->harga : 0;
+              $totalPerItem = $hargaItem * $item->quantity;
           @endphp
           
-          <span>Harga (@php echo number_format($hargaSatuanPerHari, 0, ',', '.'); @endphp × {{ $item->quantity }}): Rp{{ number_format($totalHargaItemPerHari, 0, ',', '.') }} / Hari</span>
+          <span>Harga (Rp{{ number_format($hargaItem, 0, ',', '.') }} × {{ $item->quantity }}): Rp{{ number_format($totalPerItem, 0, ',', '.') }} / Hari</span>
 
           <p>Total Item ({{ $rentalDays }} Hari): Rp{{ number_format($item->harga, 0, ',', '.') }}</p>
         </div>
@@ -225,7 +244,12 @@
 
     <div class="button-row">
       <a href="{{ route('home') }}" class="btn secondary">Sewa Lagi</a>
-      <a href="{{ $firstProductId ? route('review.index', $firstProductId) : '#' }}" class="btn">Beri Ulasan</a>
+      
+      @if($firstProductId)
+        <a href="{{ route('produk.show', $firstProductId) }}" class="btn">Beri Ulasan</a>
+      @else
+        <button class="btn" style="opacity:0.5; cursor:not-allowed;">Beri Ulasan</button>
+      @endif
     </div>
   </div>
 </body>

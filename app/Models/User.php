@@ -12,6 +12,8 @@ class User extends Authenticatable
         return $this->hasMany(Review::class);
     }
     
-    protected $fillable = ['name', 'email', 'username', 'password'];
+    // 👇 TAMBAHKAN 'phone' DI SINI (Sesuai nama kolom di database Anda)
+    protected $fillable = ['name', 'email', 'username', 'password', 'phone'];
+    
     protected $hidden = ['password'];
 }

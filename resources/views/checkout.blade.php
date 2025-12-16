@@ -108,7 +108,7 @@
       margin-bottom: 10px;
     }
 
-    textarea, input[type="date"], select {
+    textarea, input[type="date"], input[type="number"], select {
       width: 100%;
       background-color: #1a1a1a;
       border: 1px solid #555;
@@ -119,9 +119,10 @@
       resize: none;
       transition: border-color 0.2s;
       box-sizing: border-box;
-      margin-top: 8px; /* Jarak antar field */
+      margin-top: 8px; 
     }
-    textarea:focus, input[type="date"]:focus, select:focus {
+    
+    textarea:focus, input[type="date"]:focus, input[type="number"]:focus, select:focus {
         border-color: #00AA6C;
         outline: none;
     }
@@ -187,12 +188,7 @@
     .payment-option-btn:hover:not(.selected) {
         background-color: #4a4a4a;
     }
-    .payment-option-btn img {
-        height: 20px;
-        margin-bottom: 5px;
-        filter: brightness(0) invert(1);
-    }
-
+    
     .pengiriman {
       display: flex;
       flex-direction: column;
@@ -305,7 +301,6 @@
     <form id="checkoutForm" action="{{ route('checkout.process') }}" method="POST">
       @csrf
       
-      {{-- ⚠️ Handle Error/Success Messages di sini (jika ada) --}}
       @if(session('error'))
           <div class="box" style="background-color: #5d2020; color: white; padding: 10px; margin-bottom: 20px;">
               {{ session('error') }}
@@ -316,10 +311,21 @@
       @endif
 
       {{-- Data Alamat --}}
-      <div class="section-title">Alamat</div>
+      <div class="section-title">Alamat & Kontak</div>
       <div class="box alamat">
         <div class="alamat-info">
           <strong>{{ auth()->user()->name ?? 'Penyewa Guest' }}</strong><br>
+          
+          {{-- INPUT NOMOR TELEPON OTOMATIS --}}
+          <label for="no_hp" style="display: block; font-size: 14px; margin-top: 15px; margin-bottom: 0px; color: #ccc;">Nomor WhatsApp / HP:</label>
+          <input 
+              type="number" 
+              name="no_hp" 
+              class="form-control" 
+              placeholder="Contoh: 08123456789"
+              value="{{ auth()->user()->phone ?? '' }}" 
+              required
+          >
           
           <select id="provinsi" required onchange="loadRegencies()"></select>
           <select id="kabupaten" required disabled onchange="loadDistricts()"></select>
@@ -344,7 +350,7 @@
         <p style="font-size: 12px; color: #ccc; margin-top: 10px;">*Minimal pengembalian adalah besok.</p>
       </div>
 
-      {{-- METODE PEMBAYARAN BARU --}}
+      {{-- METODE PEMBAYARAN --}}
       <div class="section-title">Pilih Metode Pembayaran</div>
       <div class="payment-options">
           <button type="button" class="payment-option-btn selected" data-method="QRIS" onclick="selectPaymentMethod(this, 'QRIS')">
@@ -355,7 +361,6 @@
           </button>
       </div>
       <input type="hidden" name="metode" id="metodePembayaran" value="QRIS">
-      {{-- AKHIR METODE PEMBAYARAN BARU --}}
 
       {{-- Barang Dipesan --}}
       <div class="section-title">Barang Dipesan</div>
@@ -365,7 +370,8 @@
       @foreach($cart as $id => $item)
         @php $total += $item['harga'] * $item['quantity']; @endphp
         <div class="produk">
-          <img src="{{ asset('images/' . $item['gambar']) }}" alt="{{ $item['nama'] }}">
+          {{-- Pastikan path gambar sesuai dengan yang ada --}}
+          <img src="{{ asset('images/' . $item['gambar']) }}" alt="{{ $item['nama'] }}" onerror="this.src='https://via.placeholder.com/100'">
           <div class="produk-info">
             <h4>{{ $item['nama'] }} ({{ $item['durasi'] }})</h4>
             <div class="harga">Rp{{ number_format($item['harga'],0,',','.') }} / Hari</div>
@@ -554,6 +560,7 @@
     checkoutForm.addEventListener('submit', function(e) {
         compileAddress();
         
+        // Validasi Alamat
         if (!provinceSelect.value || !regencySelect.value || !districtSelect.value || finalAlamatInput.value.length < 10) {
             alert("Mohon lengkapi seluruh kolom wilayah dan detail jalan.");
             e.preventDefault();
@@ -641,11 +648,12 @@
       document.getElementById('biayaPengiriman').textContent = biayaKirimDisplay;
       document.getElementById('pengirimanInput').value = method;
         
-        updateDisplay(); 
+        // Re-run display update to ensure consistency
+        // (Removed circular call to updateDisplay to prevent stack overflow if any)
     }
     
     document.addEventListener('DOMContentLoaded', function() {
-        loadProvinces(); // Mulai memuat provinsi saat DOMContentLoaded
+        loadProvinces(); 
         
         const today = new Date();
         const tomorrow = new Date(today);
