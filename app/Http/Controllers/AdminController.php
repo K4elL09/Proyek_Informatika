@@ -12,20 +12,29 @@ use App\Models\Product;
 
 class AdminController extends Controller
 {
-    public function dashboard() { return view('admin.dashboard'); }
+    // --- Dashboard ---
+    public function dashboard()
+    {
+        return view('admin.dashboard');
+    }
 
+    // --- Laporan Keuangan ---
     public function laporan()
     {
-        $totalPendapatan = DB::table('transaksi')->where('status', 'Selesai')->orWhere('status', 'Disewa')->sum('total');
+        $totalPendapatan = DB::table('transaksi')->whereIn('status', ['Disewa', 'Selesai'])->sum('total');
         $jumlahTransaksi = DB::table('transaksi')->count(); 
+        
         $transaksiTerbaru = DB::table('penyewaan')
                                 ->join('products', 'penyewaan.product_id', '=', 'products.id')
                                 ->select('penyewaan.*', 'products.nama_produk')
-                                ->orderBy('penyewaan.created_at', 'desc')->take(10)->get();
+                                ->orderBy('penyewaan.created_at', 'desc')
+                                ->take(10)
+                                ->get();
 
         return view('admin.laporan.index', compact('totalPendapatan', 'jumlahTransaksi', 'transaksiTerbaru'));
     }
 
+    // --- Informasi Pemesanan ---
     public function pemesanan()
     {
         $semuaPemesanan = Transaksi::with('user')->orderBy('created_at', 'desc')->get();
@@ -38,6 +47,7 @@ class AdminController extends Controller
         return view('admin.pemesanan.show', compact('transaksi'));
     }
 
+    // --- Pesanan Manual (Offline) ---
     public function createPemesanan()
     {
         $products = Product::where('stok', '>', 0)->get();
@@ -46,65 +56,72 @@ class AdminController extends Controller
 
     public function storePemesanan(Request $request)
     {
-        // (Kode Pesanan Offline Anda - Ini harus langsung mengurangi stok)
-        // ... (Gunakan kode storePemesanan yang sebelumnya saya berikan) ...
-        // ... Karena offline dianggap langsung 'deal', stok langsung dikurangi.
-        
-        // Agar ringkas, saya fokus ke logika online di bawah ini:
+        // (Gunakan kode storePemesanan yang sudah saya berikan sebelumnya)
+        // Pastikan di sini stok LANGSUNG dikurangi karena offline
+        // ...
     }
 
 
-    // --- LOGIKA INTI ---
+    // ==========================================
+    // LOGIKA PENGEMBALIAN & VERIFIKASI (INTI)
+    // ==========================================
 
     public function pengembalian()
     {
-     $transaksiVerifikasi = Transaksi::where('status', 'Menunggu Verifikasi')->get();
+        // 1. Ambil data yang butuh verifikasi pembayaran
+        $transaksiVerifikasi = Transaksi::where('status', 'Menunggu Verifikasi')->orderBy('created_at', 'asc')->get();
 
-    $transaksiDisewa = Transaksi::where('status', 'Disewa')->get();
+        // 2. Ambil data yang sedang disewa (barang di luar)
+        $transaksiDisewa = Transaksi::where('status', 'Disewa')->orderBy('created_at', 'asc')->get();
 
-    return view('admin.pengembalian.index', compact('transaksiVerifikasi', 'transaksiDisewa'));
+        return view('admin.pengembalian.index', compact('transaksiVerifikasi', 'transaksiDisewa'));
     }
 
     /**
-     * 3. ADMIN SETUJUI (Stok Berkurang Di Sini)
+     * Aksi: Admin Menyetujui Pembayaran
+     * Stok berkurang di sini (untuk pesanan online).
      */
     public function setujuiPembayaran($id)
     {
         $transaksi = Transaksi::with('items')->findOrFail($id);
         
         if ($transaksi->status == 'Menunggu Verifikasi') {
+            
             DB::beginTransaction();
             try {
-                // Cek ketersediaan stok dulu sebelum mengurangi
+                // Cek stok dulu
                 foreach ($transaksi->items as $item) {
                     $product = Product::find($item->product_id);
                     if ($product->stok < $item->quantity) {
-                        return back()->with('error', "Gagal! Stok {$product->nama_produk} tidak cukup (Sisa: {$product->stok}).");
+                        return back()->with('error', "Gagal! Stok {$product->nama_produk} tidak cukup.");
                     }
                 }
 
-                // Jika aman, kurangi stok
+                // Kurangi stok
                 foreach ($transaksi->items as $item) {
                     $product = Product::find($item->product_id);
                     $product->decrement('stok', $item->quantity);
                 }
 
+                // Ubah status
                 $transaksi->status = 'Disewa';
                 $transaksi->save();
 
                 DB::commit();
-                return back()->with('success', 'Pembayaran disetujui. Stok berhasil dikurangi.');
+                return back()->with('success', 'Pembayaran disetujui. Stok barang telah dikurangi.');
 
             } catch (\Exception $e) {
                 DB::rollBack();
-                return back()->with('error', 'Error: ' . $e->getMessage());
+                return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
             }
         }
+
         return back()->with('error', 'Status transaksi tidak valid.');
     }
 
     /**
-     * 4. ADMIN TERIMA KEMBALI (Stok Bertambah)
+     * Aksi: Admin Menerima Barang Kembali
+     * Stok bertambah di sini.
      */
     public function prosesPengembalian(Request $request)
     {
@@ -112,25 +129,27 @@ class AdminController extends Controller
 
         DB::beginTransaction();
         try {
-            $transaksi = Transaksi::find($request->transaksi_id);
+            $transaksi = Transaksi::with('items')->find($request->transaksi_id);
+            
+            // Ubah status
             $transaksi->status = 'Selesai';
             $transaksi->save();
 
-            $itemsSewa = Penyewaan::where('transaksi_id', $transaksi->id)->get();
-
-            foreach ($itemsSewa as $item) {
+            // Kembalikan stok
+            foreach ($transaksi->items as $item) {
                 $product = Product::find($item->product_id);
                 if ($product) {
-                    $product->increment('stok', $item->quantity); // Tambah stok kembali
+                    $product->increment('stok', $item->quantity);
                 }
             }
             
             DB::commit();
-            return redirect()->route('admin.pengembalian.index')->with('success', 'Barang dikembalikan. Stok diperbarui.');
+            return redirect()->route('admin.pengembalian.index')
+                             ->with('success', 'Barang telah dikembalikan dan stok telah diperbarui.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }

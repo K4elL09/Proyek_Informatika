@@ -4,6 +4,7 @@
 
 @section('content')
 
+    <!-- TABEL 1: VERIFIKASI PEMBAYARAN -->
     <div class="stok-header">
         <h1>Verifikasi Pembayaran</h1>
     </div>
@@ -33,20 +34,18 @@
                     <td>{{ $transaksi->nama }}</td>
                     <td>Rp{{ number_format($transaksi->total, 0, ',', '.') }}</td>
                     <td>
-    @if($transaksi->bukti_transfer)
-        <small style="display:block; font-size: 10px; color: yellow;">
-            DB: {{ $transaksi->bukti_transfer }}
-        </small>
-
-        <a href="{{ asset('storage/' . $transaksi->bukti_transfer) }}" target="_blank" class="btn-edit" style="background: #17a2b8; color: white; border:none; padding: 5px 10px; cursor: pointer; display: inline-block; margin-top: 5px;">
-            <i class="fas fa-image"></i> Lihat (Cara 1)
-        </a>
-
-        @else
-        <span style="color: #aaa;">-</span>
-    @endif
-</td>
+                        @if($transaksi->bukti_transfer)
+                            <!-- Tombol Lihat Bukti -->
+                            <button onclick="showBukti('{{ asset('storage/' . $transaksi->bukti_transfer) }}')" 
+                                    class="btn-edit" style="background: #17a2b8; color: white; border:none; padding: 5px 10px; cursor: pointer;">
+                                <i class="fas fa-image"></i> Lihat
+                            </button>
+                        @else
+                            <span style="color: #aaa;">-</span>
+                        @endif
+                    </td>
                     <td>
+                        <!-- Tombol Setujui -->
                         <form action="{{ route('admin.pembayaran.setuju', $transaksi->id) }}" method="POST" onsubmit="return confirm('Setujui pembayaran ini? Stok akan dikurangi.');">
                             @csrf
                             <button type="submit" class="btn-tambah" style="width: auto; padding: 5px 10px; font-size: 12px; background: #28a745;">
@@ -57,7 +56,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #aaa; padding: 20px;">Tidak ada pembayaran pending.</td>
+                    <td colspan="5" style="text-align: center; color: #aaa; padding: 20px;">Tidak ada pembayaran yang perlu diverifikasi.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -65,6 +64,7 @@
     </div>
 
 
+    <!-- TABEL 2: PENGEMBALIAN BARANG -->
     <div class="stok-header" style="border-top: 1px solid #333; padding-top: 30px;">
         <h1>Alat yang Sedang Disewa</h1>
     </div>
@@ -88,6 +88,7 @@
                     <td>{{ \Carbon\Carbon::parse($transaksi->tanggal_sewa)->format('d M Y') }}</td>
                     <td><span style="color: #f0ad4e;">{{ $transaksi->status }}</span></td>
                     <td>
+                        <!-- Tombol Terima Barang -->
                         <form action="{{ route('admin.pengembalian.proses') }}" method="POST" onsubmit="return confirm('Barang sudah kembali? Stok akan bertambah.');">
                             @csrf
                             <input type="hidden" name="transaksi_id" value="{{ $transaksi->id }}">
@@ -99,17 +100,19 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align: center; color: #aaa; padding: 20px;">Tidak ada barang disewa.</td>
+                    <td colspan="5" style="text-align: center; color: #aaa; padding: 20px;">Tidak ada barang yang sedang disewa.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
+
+    <!-- MODAL POPUP UNTUK LIHAT BUKTI -->
     <div id="buktiModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="position: relative; background: #222; padding: 10px; border-radius: 10px; max-width: 90%; max-height: 90%;">
-            <span onclick="closeBukti()" style="position: absolute; top: -15px; right: -15px; background: red; color: white; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px; cursor: pointer; font-weight: bold;">&times;</span>
-            <img id="buktiImg" src="" style="max-width: 100%; max-height: 80vh; border-radius: 5px;">
+        <div style="position: relative; background: #222; padding: 10px; border-radius: 10px; max-width: 90%; max-height: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+            <span onclick="closeBukti()" style="position: absolute; top: -15px; right: -15px; background: red; color: white; border-radius: 50%; width: 30px; height: 30px; text-align: center; line-height: 30px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">&times;</span>
+            <img id="buktiImg" src="" style="max-width: 100%; max-height: 80vh; border-radius: 5px; display: block;">
         </div>
     </div>
 
@@ -121,6 +124,13 @@
         function closeBukti() {
             document.getElementById('buktiModal').style.display = 'none';
         }
+        
+        // Tutup modal jika klik di luar gambar
+        document.getElementById('buktiModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBukti();
+            }
+        });
     </script>
 
 @endsection

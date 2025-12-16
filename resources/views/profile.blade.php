@@ -143,7 +143,7 @@
                         >
 
                         <img 
-                            src="{{ $user->photo ? asset('storage/' . $user->photo) : asset('images/profil.png') }}" 
+                            src="{{ $user->photo ? asset('storage/' . $user->photo) : asset('images/profile.png') }}" 
                             class="profile-avatar"
                             onclick="document.getElementById('photoInput').click();" 
                             alt="Foto Profil"

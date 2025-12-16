@@ -186,7 +186,7 @@
                 {{-- FOTO PROFIL USER DINAMIS --}}
                 <a href="{{ route('profile') }}" class="profile-icon">
                     <img 
-                        src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/profil.png') }}" 
+                        src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : asset('images/profile.png') }}" 
                         alt="Foto Profil"
                     >
                 </a>

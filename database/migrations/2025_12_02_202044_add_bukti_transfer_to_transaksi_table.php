@@ -12,8 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transaksi', function (Blueprint $table) {
-            // Menambahkan kolom 'bukti_transfer' setelah kolom 'status'
-            // 'nullable()' artinya boleh kosong (karena saat checkout awal belum ada bukti)
             $table->string('bukti_transfer')->nullable()->after('status');
         });
     }
