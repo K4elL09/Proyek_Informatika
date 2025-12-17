@@ -62,6 +62,8 @@ class ReviewController extends Controller
 
         $action = $review->wasRecentlyCreated ? 'ditambahkan' : 'diperbarui';
 
-        return redirect()->route('review.index', $productId)->with('success', "Ulasan Anda berhasil {$action}!");
+        return redirect()->route('review.index', [
+    'productId' => $productId])->with('success', "Ulasan Anda berhasil {$action}!");
+
     }
 }
